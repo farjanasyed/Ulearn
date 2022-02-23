@@ -1,0 +1,442 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:3000/api'
+info:
+  version: 1.0.0
+  title: Unext API Store
+tags:
+  # - name: Activity
+  #   description: Perform Different operations on Activities 
+  - name: User
+    description: Perform Different operations on Users
+paths:
+  # /activity/list:
+  #   get:
+  #     tags:
+  #       - Activity
+  #     summary: Get list of Activities
+  #     description: ''
+  #     operationId: getActivityList
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Activity'
+  #       '500':
+  #         description: Invalid input
+  # /activity/update:
+  #   put:
+  #     tags:
+  #       - Activity
+  #     summary: Update an existing activity
+  #     description: ''
+  #     operationId: updateActivity
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Activity'
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Activity Id not found
+  #       '405':
+  #         description: Validation exception
+  #     requestBody:
+  #       $ref: '#/components/requestBodies/Activity'
+  # /activity/{id}:
+  #   get:
+  #     tags:
+  #       - Activity
+  #     summary: Find Activity By Id
+  #     description: It shows activity ehich maps with Id
+  #     operationId: getActivity
+  #     parameters:
+  #       - name: id
+  #         description: Id  that need to be considered for filter
+  #         required: true
+  #         in: path
+  #         style: form
+  #         explode: false
+  #         schema:
+  #           type: number
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               $ref: '#/components/schemas/Activity'
+  #       '400':
+  #         description: Invalid status value
+  # /activity/deleteById/{id}:
+  #   delete:
+  #     tags:
+  #       - Activity
+  #     summary: Delete Activity By Id
+  #     description: 
+  #       delete activity by ID
+  #     operationId: findPetsByTags
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         description: id to filter by
+  #         required: true
+  #         style: form
+  #         explode: false
+  #         schema:
+  #          type: number
+  #     responses:
+  #       '200':
+  #         description: Deleted Successfully
+  #       '400':
+  #         description: Invalid tag value
+  #     deprecated: true
+  
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create New User
+      description: ''
+      operationId: create User
+      responses:
+        '200':
+          description: User Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  description: "User First Name"
+                  type: string
+                  required: true
+                lastName:
+                  description: "User Last Name"
+                  type: string
+                  required: true
+                email:
+                  description: "User Email"
+                  type: string
+                  required: true
+                mobileNumber:
+                  description: "User Mobile Number"
+                  type: number
+                  required: true
+                password:
+                  description: "Password"
+                  type: string
+        required: true
+  /user/{id}:
+    get:
+      tags:
+        - User
+      Summary: Get User By ID
+      description: It shows activity ehich maps with Id
+      operationId: getActivity
+      parameters:
+        - name: id
+          description: Id  that need to be considered for filter
+          required: true
+          in: path
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid status value
+  
+  # /activity/create:
+  #   post:
+  #     tags:
+  #       - Activity
+  #     summary: Create New Activity
+  #     description: ''
+  #     operationId: createActivity
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ApiResponse'
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               id:
+  #                 description: Additional data to pass to server
+  #                 type: number
+  #                 required: true
+  #               title:
+  #                 description: Activity tittle
+  #                 type: string
+  #                 required: true
+  #               dueDate:
+  #                 description: Due Date
+  #                 type: string
+  #                 required: true
+  #               completed:
+  #                 description: Activity Status
+  #                 type: boolean
+  #                 required: true
+  #       required: true
+  /authn/token:
+    post:
+      security:
+        - basicAuth: []
+      tags:
+        - Auth
+      summary: Get Access and Id Token
+      description: ''
+      operationId: Get Access Token
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: successful operation
+          $ref: '#/components/resonses/UnauthorizedError'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  description: Additional data to pass to server
+                  type: number
+                  required: true
+                password:
+                  description: password
+                  type: string
+                  required: true
+                username :
+                  description: user name
+                  type: string
+                  required: true
+                scope:
+                  description: scope
+                  type: string
+                  required: true
+        required: true
+  
+  /users/user-info/{schema}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      Summary: Get User Info By access Token
+      description: It Shows user info of access token
+      operationId: getUserInfo
+      parameters:
+        - name: schema
+          description: 
+          required: true
+          in: path
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid status value
+        '401':
+          description: Un-Authorized Error
+          $ref: '#/components/responses/UnauthorizedError'
+  /authn/refresh-token:
+    post:
+      security:
+        - basicAuth : []
+      tags:
+        - Auth
+      summary: Renew Token
+      description: ''
+      operationId: Get Refresh Token
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: successful operation
+          $ref: '#/components/resonses/UnauthorizedError'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  description: Additional data to pass to server
+                  type: number
+                  required: true
+                password:
+                  description: password
+                  type: string
+                  required: true
+                username :
+                  description: user name
+                  type: string
+                  required: true
+                scope:
+                  description: scope
+                  type: string
+                  required: true
+                access_token:
+                  description: Access Token
+                  type: string
+                  required: true
+                refresh_token:
+                  description: Refresh Token
+                  type: string
+                  required: true
+        required: true
+  /users/bulk:
+    post:
+      tags:
+        - User
+      summary: Create  Users In bulk
+      description: ''
+      operationId: create users in bulk
+      responses:
+        '200':
+          description: User Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  firstName:
+                    description: "User First Name"
+                    type: string
+                    required: true
+                  lastName:
+                    description: "User Last Name"
+                    type: string
+                    required: true
+                  email: 
+                    description: "User Email"
+                    type: string
+                    required: true
+                  mobileNumber:
+                    description: "User Mobile Number"
+                    type: number
+                    required: true
+                  password:
+                    description: "Password"
+                    type: string
+        required: true
+
+components:
+  securitySchemes:
+      basicAuth:
+        type: http
+        scheme: basic
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+security:
+  - basicAuth: []
+  - bearerAuth: []
+requestBodies:
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+      description: List of user object
+      required: true
+    Activity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Activity'
+      description: Activity object that needs to be added to the store
+      required: true
+
+schemas:
+    Activity:
+      title: Activity
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+          requred: true
+        title:
+          type: string
+        dueDate:
+          type: string
+          example: doggie
+        completed:
+          type: boolean
+    User:
+      title: User
+      type: object
+      required: true
+      properties:
+        firstName:
+          type: string
+          requred: true
+        lastName:
+          type: string
+        email:
+          type: string
+        mobileNumber:
+          type: number
+        password:
+          type: string
+responses:
+  UnauthorizedError: missing or invalid access token
+
+
+        
