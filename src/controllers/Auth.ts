@@ -6,6 +6,7 @@ class AuthContrller {
         AuthService.getAuthToken(req.body, req.headers.authorization).then(result => {
             console.log("result from token", result.status);
             if (result.status == 400) {
+                console.log("Result",result);
                 res.send({
                     statusCode: 400,
                     statusMessage: "User Not Confirmed Yet",
@@ -19,6 +20,7 @@ class AuthContrller {
                     data: result.data
                 })
         }).catch(error => {
+            console.log("Error",error);
             if (error.response.status == 400) {
                 res.status(400).send({
                     statusCode: 400,

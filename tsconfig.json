@@ -12,7 +12,8 @@
   },
   "include": [
       "src/**/*.ts",
-      "index.html"
+      "index.html",
+      "wso2carbon.jks"
   ],
   "exclude": [
       "node_modules"

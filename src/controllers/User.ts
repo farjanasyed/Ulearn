@@ -39,7 +39,6 @@ interface VerifyUser {
 
 export class UserController {
   public async createUser(req: Request, res: Response) {
-    console.log("user", req.body);
     let user: User = {
       name: {
         givenName: req.body.firstName,
@@ -53,10 +52,9 @@ export class UserController {
         value: req.body.mobileNumber.toString(),
       }],
       "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-        "verifyEmail": true
+        "verifyEmail": false
       }
     }
-    console.log("body", user);
     UserService.createUser(user).then(response => {
       res.send({
         statusCode: 200,
@@ -65,15 +63,27 @@ export class UserController {
       }
       );
     }).catch(error => {
-      console.log("err", error.response.status);
-      res.send({
-        statusCode: 409,
-        statuMessage: "User Already Exist"
-      })
-      res.send({
-        statusCode: 500,
-        statuMessage: "Something Went Wrong"
-      })
+      if(error && error.response.status == 400)
+      {
+        res.send({
+          statusCode: 400,
+          statuMessage:"Bad Request"
+        })
+      }
+
+      if(error && error.response.status == 409 ){
+        res.send({
+          statusCode: 409,
+          statuMessage:"User already exist"
+        })
+      }
+     
+      else{
+        res.send({
+          statusCode: 500,
+          statuMessage: "Something Went Wrong"
+        })
+      }
     })
   }
 

@@ -14,7 +14,7 @@ const credentials = { key: key, cert: cert };
 
 class AuthService {
     async getAuthToken(body, token) {
-        return axios.post('https://localhost:9443/oauth2/token', qs.stringify(body), {
+        return axios.post(`${process.env.WSO2_URL}/oauth2/token`, qs.stringify(body), {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,
@@ -28,7 +28,7 @@ class AuthService {
         })
     }
     async getUserInfo(accessToken, param) {
-        return axios.get(`https://localhost:9443/oauth2/userinfo?schema=${param}`, {
+        return axios.get(`${process.env.WSO2_URL}/oauth2/token/oauth2/userinfo?schema=${param}`, {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,
@@ -40,7 +40,7 @@ class AuthService {
         })
     }
     async getRefreshToken(accessToken, body) {
-        return axios.post(`https://localhost:9443/oauth2/token`, qs.stringify(body), {
+        return axios.post(`${process.env.WSO2_URL}/oauth2/token/oauth2/token`, qs.stringify(body), {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,

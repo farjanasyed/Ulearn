@@ -16,13 +16,15 @@ const credentials = { key: key, cert: cert };
 class UserService {
     async createUser(data: any) {
 
-        return axios.post(`https://localhost:9443/scim2/Users`, data, {
+        console.log("env",`${process.env.WSO2_URL}`)
+
+        return axios.post(`${process.env.WSO2_URL}/scim2/Users`, data, {
             headers: {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -32,13 +34,13 @@ class UserService {
         })
     }
     async getUserById(Id: string) {
-        return axios.get(`https://localhost:9443/scim2/Users/${Id}`, {
+        return axios.get(`${process.env.WSO2_URL}/scim2/Users/${Id}`, {
             headers: {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -49,13 +51,13 @@ class UserService {
     }
 
     async verifyUser(body: any) {
-        return axios.post(`https://localhost:9443/api/identity/user/v1.0/validate-code`, body, {
+        return axios.post(`${process.env.WSO2_URL}/api/identity/user/v1.0/validate-code`, body, {
             headers: {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'RBQa1_wQZ_L5t43OnHdCUFWfhl8a',
-                password: 'nzoRnNJ9yhDl5Eih7vpdKXOOy38a'
+                username: 'admin',
+                password: 'admin'
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -67,13 +69,13 @@ class UserService {
     }
 
     async createBulkUsers(data: any) {
-        return axios.post(`https://20.204.146.129:9443/scim2/Bulk`, data, {
+        return axios.post(`${process.env.WSO2_URL}/scim2/Bulk`, data, {
             headers: {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,

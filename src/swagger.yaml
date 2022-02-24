@@ -138,32 +138,32 @@ paths:
                   description: "Password"
                   type: string
         required: true
-  /user/{id}:
-    get:
-      tags:
-        - User
-      Summary: Get User By ID
-      description: It shows activity ehich maps with Id
-      operationId: getActivity
-      parameters:
-        - name: id
-          description: Id  that need to be considered for filter
-          required: true
-          in: path
-          style: form
-          explode: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid status value
+  # /user/{id}:
+  #   get:
+  #     tags:
+  #       - User
+  #     Summary: Get User By ID
+  #     description: It shows activity ehich maps with Id
+  #     operationId: getActivity
+  #     parameters:
+  #       - name: id
+  #         description: Id  that need to be considered for filter
+  #         required: true
+  #         in: path
+  #         style: form
+  #         explode: false
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               $ref: '#/components/schemas/User'
+  #       '400':
+  #         description: Invalid status value
   
   # /activity/create:
   #   post:
