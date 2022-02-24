@@ -3,8 +3,10 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 RUN npm install -g ts-node
-RUN npm install -g typescript
+RUN npm install -g typescriptCOPY . .
+RUN tsc -p ./tsconfig.json
 RUN npm run build
-COPY . .
+RUN pwd
+RUN echo "$PWD"
 EXPOSE 3000
 CMD ["npm","start"]
