@@ -8,7 +8,7 @@ tags:
   # - name: Activity
   #   description: Perform Different operations on Activities 
   - name: User
-    description: Perform Different operations on Users
+    description: Perform Different operation on Users
 paths:
   # /activity/list:
   #   get:
