@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://localhost:3000/api'
+  - url: 'http://ec2-3-108-178-123.ap-south-1.compute.amazonaws.com:3000/api'
 info:
   version: 1.0.0
   title: Unext API Store
