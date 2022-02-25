@@ -7,14 +7,14 @@ class AuthContrller {
             console.log("result from token", result.status);
             if (result.status == 400) {
                 console.log("Result",result);
-                res.send({
+                res.status(400).send({
                     statusCode: 400,
-                    statusMessage: "User Not Confirmed Yet",
+                    statusMessage: "Bad Request",
                     data: result.data
                 })
             }
             else
-                res.send({
+                res.status(200).send({
                     statusCode: 200,
                     statusMessage: "Token Retrieved Successfully",
                     data: result.data
@@ -24,7 +24,7 @@ class AuthContrller {
             if (error.response.status == 400) {
                 res.status(400).send({
                     statusCode: 400,
-                    statusMessage: "User Not Confirmed Yet"
+                    statusMessage: "Bad Request"
                 })
             }
             else
@@ -50,14 +50,14 @@ class AuthContrller {
     }
     public async getRefreshToken(req: Request, res: Response) {
         AuthService.getRefreshToken(req.headers.authorization, req.body).then(result => {
-            res.send({
+            res.status(200).send({
                 statusCode: 200,
                 statusMessage: "Token Renewed Successfully",
                 data: result.data
             })
         }).catch(err => {
             console.log('err', err);
-            res.send({
+            res.status(500).send({
                 statusCode: 500,
                 statusMessage: "Something Went wrong"
             })

@@ -56,30 +56,31 @@ export class UserController {
       }
     }
     UserService.createUser(user).then(response => {
-      res.send({
+      res.status(200).send({
         statusCode: 200,
         statuMessage: "User Created Successfully",
         data: response.data
       }
       );
     }).catch(error => {
+      console.log("Error:: Create User",error)
       if(error && error.response.status == 400)
       {
-        res.send({
+        res.status(400).send({
           statusCode: 400,
           statuMessage:"Bad Request"
         })
       }
 
       if(error && error.response.status == 409 ){
-        res.send({
+        res.status(409).send({
           statusCode: 409,
           statuMessage:"User already exist"
         })
       }
      
       else{
-        res.send({
+        res.status(500).send({
           statusCode: 500,
           statuMessage: "Something Went Wrong"
         })
