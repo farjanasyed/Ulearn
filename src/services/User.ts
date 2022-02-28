@@ -5,6 +5,7 @@ import fs from "fs";
 import https from 'https';
 import path from 'path';
 import jks from 'jks-js'
+import qs from "qs";
 
 const keystore = jks.toPem(
     fs.readFileSync(path.join(__dirname, "../wso2carbon.jks")),
@@ -19,6 +20,43 @@ class UserService {
         console.log("env",`${process.env.WSO2_URL}`)
 
         return axios.post(`${process.env.WSO2_URL}/scim2/Users`, data, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            },
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            })
+        })
+    }
+
+
+    async getAllUsers(){
+        return axios.get(`${process.env.WSO2_URL}/scim2/Users`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            },
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            })
+        })
+    }
+
+
+    async getUserByName(userName: string){
+        let filter = `filter=userName eq ${userName}`
+        return axios.get(`${process.env.WSO2_URL}/scim2/Users?${filter}`, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -68,14 +106,11 @@ class UserService {
 
     }
 
-    async createBulkUsers(data: any) {
+    async createBulkUsers(data: any, token: any) {
         return axios.post(`${process.env.WSO2_URL}/scim2/Bulk`, data, {
             headers: {
                 "Content-Type": "application/json",
-            },
-            auth: {
-                username: process.env.AUTH_USER,
-                password: process.env.AUTH_PASSWORD
+                "Authorization": token
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -84,7 +119,20 @@ class UserService {
             })
         })
     }
+    async changePassword(userId,body,token) {
+        return axios.patch(`${process.env.WSO2_URL}/wso2/scim/Users/${userId}`,body, {
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            }),
 
+            headers: {
+                "Authorization": token
+            }
+           
+        })
+    }
 }
 
 

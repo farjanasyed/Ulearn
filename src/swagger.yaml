@@ -1,6 +1,7 @@
 openapi: 3.0.0
 servers:
   - url: 'http://ec2-3-108-178-123.ap-south-1.compute.amazonaws.com:3000/api'
+#  - url: 'http://localhost:3000/api'
 info:
   version: 1.0.0
   title: Unext API Store
@@ -228,42 +229,93 @@ paths:
             schema:
               type: object
               properties:
-                grant_type:
-                  description: Additional data to pass to server
-                  type: number
-                  required: true
                 password:
                   description: password
                   type: string
                   required: true
-                username :
+                userName :
                   description: user name
                   type: string
                   required: true
-                scope:
-                  description: scope
+        required: true
+
+  /users/me/changePassword:
+    post:
+      security:
+        - basicAuth: []
+      tags:
+        - User
+      summary: To Change pasword
+      description: ''
+      operationId: Change Password
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: successful operation
+          $ref: '#/components/resonses/UnauthorizedError'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  description: password
+                  type: string
+                  required: true
+                userName :
+                  description: user name
                   type: string
                   required: true
         required: true
   
-  /users/user-info/{schema}:
+  # /users/user-info/{schema}:
+  #   get:
+  #     security:
+  #       - bearerAuth: []
+  #     tags:
+  #       - User
+  #     Summary: Get User Info By access Token
+  #     description: It Shows user info of access token
+  #     operationId: getUserInfo
+  #     parameters:
+  #       - name: schema
+  #         description: 
+  #         required: true
+  #         in: path
+  #         style: form
+  #         explode: false
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               $ref: '#/components/schemas/User'
+  #       '400':
+  #         description: Invalid status value
+  #       '401':
+  #         description: Un-Authorized Error
+  #         $ref: '#/components/responses/UnauthorizedError'
+
+  /users/getAllUsers:
     get:
       security:
-        - bearerAuth: []
+         - basicAuth: []
       tags:
-        - Users
-      Summary: Get User Info By access Token
-      description: It Shows user info of access token
-      operationId: getUserInfo
-      parameters:
-        - name: schema
-          description: 
-          required: true
-          in: path
-          style: form
-          explode: false
-          schema:
-            type: string
+        - User
+      Summary: Get all Users
+      description: It get All users
+      operationId: getAllUsers
       responses:
         '200':
           description: successful operation
@@ -303,22 +355,6 @@ paths:
             schema:
               type: object
               properties:
-                grant_type:
-                  description: Additional data to pass to server
-                  type: number
-                  required: true
-                password:
-                  description: password
-                  type: string
-                  required: true
-                username :
-                  description: user name
-                  type: string
-                  required: true
-                scope:
-                  description: scope
-                  type: string
-                  required: true
                 access_token:
                   description: Access Token
                   type: string

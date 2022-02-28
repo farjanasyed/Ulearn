@@ -3,6 +3,11 @@ import { Request, Response } from 'express';
 import qs from 'qs';
 class AuthContrller {
     public async getAuthToken(req: Request, res: Response) {
+
+        req.body["grant_type"] = "password"
+        req.body["scope"]= "openid"
+        req.body["username"] = req.body.userName;
+        console.log("Body:::",req.body);
         AuthService.getAuthToken(req.body, req.headers.authorization).then(result => {
             console.log("result from token", result.status);
             if (result.status == 400) {
@@ -49,6 +54,9 @@ class AuthContrller {
         })
     }
     public async getRefreshToken(req: Request, res: Response) {
+
+        req.body["grant_type"] = "refresh_token",
+        req.body["scope"]  = "openid"
         AuthService.getRefreshToken(req.headers.authorization, req.body).then(result => {
             res.status(200).send({
                 statusCode: 200,

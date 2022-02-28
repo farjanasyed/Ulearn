@@ -40,7 +40,7 @@ class AuthService {
         })
     }
     async getRefreshToken(accessToken, body) {
-        return axios.post(`${process.env.WSO2_URL}/oauth2/token/oauth2/token`, qs.stringify(body), {
+        return axios.post(`${process.env.WSO2_URL}/oauth2/token`, qs.stringify(body), {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,

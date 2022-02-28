@@ -3,6 +3,7 @@ const url = require('url');
 
 import UserService from '../services/User';
 import QueryString from 'query-string';
+import console from 'console';
 
 interface PhoneNumbers {
   type: string,
@@ -88,16 +89,58 @@ export class UserController {
     })
   }
 
+
+  public async changePassword(req: Request, res: Response) {
+    console.log("ChangePassword Request",req.body)
+    const users: any =await UserService.getUserByName(req.body.userName);
+
+    
+    console.log("Change Password::Info",users.data);
+    let user : any ={
+        userName : users?.data.Resources[0].userName,
+        password: req.body.password
+    }
+    UserService.changePassword(users?.data.Resources[0].id,user,req.headers.authorization).then(response => {
+      res.status(200).send({
+        statusCode: 200,
+        statuMessage: "Password Updated Successfully",
+        data: response.data
+      }
+      );
+    }).catch(error => {
+      console.log("Error:: Create User",error)
+      if(error && error.response.status == 400)
+      {
+        res.status(400).send({
+          statusCode: 400,
+          statuMessage:"Bad Request"
+        })
+      }
+      if(error && error.response.status == 401){
+        res.status(401).send({
+          statusCode: 401,
+          statuMessage: "Authentication fialed"
+        })
+      }
+      else{
+        res.status(500).send({
+          statusCode: 500,
+          statuMessage: "Something Went Wrong"
+        })
+      }
+    })
+  }
+
   public async getUserById(req: Request, res: Response) {
     let userId = req.params.id
     UserService.getUserById(userId).then(response => {
-      res.send({
+      res.status(200).send({
         statusCode: 200,
         StatusMessage: "User Retrieved Successfully",
         data: response.data
       })
     }).catch(err => {
-      res.send({
+      res.status(500).send({
         statusCode: 500,
         statusMessage: "Something Went Wrong"
       })
@@ -105,6 +148,34 @@ export class UserController {
 
   }
 
+
+
+  public async getAllusers(req: Request, res: Response) {
+    UserService.getAllUsers().then(response => {
+      res.status(200).send({
+        statusCode: 200,
+        StatusMessage: "User Retrieved Successfully",
+        data: response.data
+      })
+    }).catch(err => {
+
+      if(err && err.response && err.response.status == 401){
+        res.status(401).send({
+          statusCode: 401,
+          statusMessage: "Unauthorized"
+        })
+      }
+
+      else {
+      res.status(401).send({
+        statusCode: 500,
+        statusMessage: "Something Went Wrong"
+      })
+    }  
+    })
+  
+
+  }
   public async verifyUser(req: Request, res: Response) {
     let parsedUrl = url.parse(req.url);
     let parsedQs = QueryString.parse(parsedUrl.query);
@@ -195,7 +266,7 @@ export class UserController {
       Operations: operations
 
     }
-    UserService.createBulkUsers(bulkUsersBody).then(response => {
+    UserService.createBulkUsers(bulkUsersBody,req.headers.authorization).then(response => {
       console.log("response", response);
       res.status(200).send({
         status: 200,
