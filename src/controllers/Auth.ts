@@ -8,7 +8,7 @@ class AuthContrller {
         req.body["scope"]= "openid"
         req.body["username"] = req.body.userName;
         console.log("Body:::",req.body);
-        AuthService.getAuthToken(req.body, req.headers.authorization).then(result => {
+        AuthService.getAuthToken(req.body).then(result => {
             console.log("result from token", result.status);
             if (result.status == 400) {
                 console.log("Result",result);
@@ -40,13 +40,14 @@ class AuthContrller {
         })
     }
     public async getUserInfo(req: Request, res: Response) {
-        AuthService.getUserInfo(req.headers.authorization, req.params.schema).then(result => {
+        AuthService.getUserInfo(req.headers.authorization).then(result => {
+            console.log("GETUSER::Error",result);
             res.status(200).send({
-                statusMessage: "Roles Retrieved Successfully",
+                statusMessage: "User Retrieved Successfully",
                 data: result.data
             })
         }).catch(err => {
-            console.log("err", err);
+            console.log("GETUSER::Error",err);
             res.status(401).send({
                 statusCode: 401,
                 statusMessage: "Unathorized or Missing token"
@@ -57,7 +58,7 @@ class AuthContrller {
 
         req.body["grant_type"] = "refresh_token",
         req.body["scope"]  = "openid"
-        AuthService.getRefreshToken(req.headers.authorization, req.body).then(result => {
+        AuthService.getRefreshToken(req.body).then(result => {
             res.status(200).send({
                 statusCode: 200,
                 statusMessage: "Token Renewed Successfully",

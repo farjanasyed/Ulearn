@@ -17,6 +17,19 @@ export const validateToken = (req: Request, res: Response, next: any) => {
    else {
       next();
    }
+}
 
-
+export const checkTokenValidity = (req: Request,res: Response, next: any) =>{
+   // const decodedToken: any = jwt_decode(req.body["access_token"]);
+   console.log("req.headers.authorization",req.headers.authorization);
+   if (req.headers.authorization === undefined) {
+    return  res.status(401).send({
+         stausCode: 401,
+         statusMessage: "Unauthorized"
+         
+      })
+   }
+   else {
+      next();
+   }
 }

@@ -15,15 +15,14 @@ const { cert, key } = keystore["wso2carbon"];
 const credentials = { key: key, cert: cert };
 
 class UserService {
-    async createUser(data: any, token: string) {
+    async createUser(data: any) {
 
      
         console.log("env",`${process.env.WSO2_URL}`)
 
         return axios.post(`${process.env.WSO2_URL}/scim2/Users`, data, {
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
+                "Content-Type": "application/json"
             },
           
             httpsAgent: new https.Agent({
@@ -122,7 +121,7 @@ class UserService {
                 rejectUnauthorized: false
             }),
 
-            headers: {
+            headers:{
                 "Authorization": token
             }
            

@@ -13,7 +13,7 @@ const { cert, key } = keystore["wso2carbon"];
 const credentials = { key: key, cert: cert };
 
 class AuthService {
-    async getAuthToken(body, token) {
+    async getAuthToken(body) {
         return axios.post(`${process.env.WSO2_URL}/oauth2/token`, qs.stringify(body), {
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -22,32 +22,38 @@ class AuthService {
             }),
 
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                "Authorization": token
+                'Content-Type': 'application/x-www-form-urlencoded'
+               
+            },
+            auth:{
+                username: process.env.Web_Client_Id,
+                password: process.env.Web_Client_Secret
             }
         })
     }
-    async getUserInfo(accessToken, param) {
-        return axios.get(`${process.env.WSO2_URL}/oauth2/token/oauth2/userinfo?schema=${param}`, {
+    async getUserInfo(accessToken) {
+         console.log("access tokne",accessToken);
+        return axios.get(`${process.env.WSO2_URL}/wso2/scim/Users/me`, {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,
                 rejectUnauthorized: false
             }),
-            headers: {
-                "Authorization": accessToken
-            },
+            headers:{
+                "Authorization":`${accessToken}`
+            }
         })
     }
-    async getRefreshToken(accessToken, body) {
+    async getRefreshToken(body) {
         return axios.post(`${process.env.WSO2_URL}/oauth2/token`, qs.stringify(body), {
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,
                 rejectUnauthorized: false
             }),
-            headers: {
-                "Authorization": accessToken
+            auth: {
+               username : process.env.Web_Client_Id,
+               password: process.env.Web_Client_Secret
             },
         })
     }

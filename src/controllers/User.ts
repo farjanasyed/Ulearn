@@ -1,5 +1,6 @@
 import { Request, response, Response } from 'express';
 const url = require('url');
+import AuthService from '../services/Auth';
 
 import UserService from '../services/User';
 import QueryString from 'query-string';
@@ -47,7 +48,8 @@ export class UserController {
         givenName: req.body.firstName,
         familyName: req.body.lastName
       },
-      userName: req.body.firstName,
+      userName: req.body.userName,
+      
       password: req.body.password ? req.body.password : "test@123",
       emails: [req.body.email],
       phoneNumbers: [{
@@ -58,7 +60,7 @@ export class UserController {
         "verifyEmail": false
       }
     }
-    UserService.createUser(user,req.headers.authorization).then(response => {
+    UserService.createUser(user).then(response => {
       res.status(200).send({
         statusCode: 200,
         statuMessage: "User Created Successfully",
@@ -103,46 +105,54 @@ export class UserController {
     console.log("ChangePassword Request",req.body)
 
     try {
-    const users: any =await UserService.getUserByName(req.body.userName,req.headers.authorization);
-    console.log("Change Password::Info",users.data);
-    let user : any ={
-        userName : users?.data.Resources[0].userName,
-        password: req.body.password
+     AuthService.getUserInfo(req.headers.authorization).then((useInfo:any)=>{
+         console.log("Res",res);
+         let userData : any ={
+          userName : useInfo?.data?.userName,
+          password: req.body.newPassword
+         }
+          UserService.changePassword(useInfo.data.id,userData,req.headers.authorization).then(response => {
+            return res.status(200).send({
+              statusCode: 200,
+              statuMessage: "Password Updated Successfully",
+              data: response.data
+            });
+          }).catch(error => {
+            console.log("Error:: Create User",error)
+            if(error && error.response.status == 400)
+            {
+              res.status(400).send({
+                statusCode: 400,
+                statuMessage:"Bad Request"
+              })
+            }
+            if(error && error.response.status == 401){
+             return res.status(401).send({
+                statusCode: 401,
+                statuMessage: "Authentication failed"
+              })
+            }
+            else{
+             return res.status(500).send({
+                statusCode: 500,
+                statuMessage: "Something Went Wrong"
+              })
+            }
+          })
+      
+     }).catch(err=>{
+        if(err && err.response && err.response.status == 401 )
+          {
+           return  res.status(401).send({
+              statusCode: 401,
+              statuMessage: "Unauthorized to perform this operation"
+             })
+          }
+     })
+   
     }
-    UserService.changePassword(users?.data.Resources[0].id,user,req.headers.authorization).then(response => {
-      res.status(200).send({
-        statusCode: 200,
-        statuMessage: "Password Updated Successfully",
-        data: response.data
-      }
-      );
-    }).catch(error => {
-      console.log("Error:: Create User",error)
-      if(error && error.response.status == 400)
-      {
-        res.status(400).send({
-          statusCode: 400,
-          statuMessage:"Bad Request"
-        })
-      }
-      if(error && error.response.status == 401){
-        res.status(401).send({
-          statusCode: 401,
-          statuMessage: "Authentication fialed"
-        })
-      }
-      else{
-        res.status(500).send({
-          statusCode: 500,
-          statuMessage: "Something Went Wrong"
-        })
-      }
-    })
-
-  }
-
-    catch(error){
-      res.status(500).send({
+    catch(err){
+      return res.status(500).send({
         statusCode: 500,
         statuMessage: "Something Went Wrong"
       })
@@ -190,7 +200,7 @@ export class UserController {
         data: response.data
       })
     }).catch(err => {
-
+      console.log("err",err);
       if(err && err.response && err.response.status == 401){
         res.status(401).send({
           statusCode: 401,
@@ -248,9 +258,6 @@ export class UserController {
   }
 
   public async createBulkUsers(req: Request, res: Response) {
-
-    
-
     let body = {
       "failOnErrors": 1,
       "schemas": [
@@ -282,7 +289,8 @@ export class UserController {
           "schemas": [
             "urn:ietf:params:scim:schemas:core:2.0:User"
           ],
-          "userName": user.firstName,
+          "userName": user.userName,
+          "firstName": user.firstName,
           "password": user.password,
           "name": {
             givenName: user.firstName,
