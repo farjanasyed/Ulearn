@@ -40,6 +40,8 @@ interface VerifyUser {
 
 export class UserController {
   public async createUser(req: Request, res: Response) {
+
+    try{
     let user: User = {
       name: {
         givenName: req.body.firstName,
@@ -56,7 +58,7 @@ export class UserController {
         "verifyEmail": false
       }
     }
-    UserService.createUser(user).then(response => {
+    UserService.createUser(user,req.headers.authorization).then(response => {
       res.status(200).send({
         statusCode: 200,
         statuMessage: "User Created Successfully",
@@ -87,14 +89,21 @@ export class UserController {
         })
       }
     })
+  } 
+  catch(error){
+    res.status(500).send({
+      statusCode: 500,
+      statuMessage: "Something Went Wrong"
+    })
+  }
   }
 
 
   public async changePassword(req: Request, res: Response) {
     console.log("ChangePassword Request",req.body)
-    const users: any =await UserService.getUserByName(req.body.userName);
 
-    
+    try {
+    const users: any =await UserService.getUserByName(req.body.userName,req.headers.authorization);
     console.log("Change Password::Info",users.data);
     let user : any ={
         userName : users?.data.Resources[0].userName,
@@ -129,11 +138,22 @@ export class UserController {
         })
       }
     })
+
+  }
+
+    catch(error){
+      res.status(500).send({
+        statusCode: 500,
+        statuMessage: "Something Went Wrong"
+      })
+    }
   }
 
   public async getUserById(req: Request, res: Response) {
+
+    try {
     let userId = req.params.id
-    UserService.getUserById(userId).then(response => {
+    UserService.getUserById(userId,req.headers.authorization).then(response => {
       res.status(200).send({
         statusCode: 200,
         StatusMessage: "User Retrieved Successfully",
@@ -145,13 +165,25 @@ export class UserController {
         statusMessage: "Something Went Wrong"
       })
     })
+  }
+
+  catch(err){
+
+    res.status(500).send({
+      statusCode: 500,
+      statuMessage: "Something Went Wrong"
+    })
+
+  }
 
   }
 
 
 
   public async getAllusers(req: Request, res: Response) {
-    UserService.getAllUsers().then(response => {
+
+    try {
+    UserService.getAllUsers(req.headers.authorization).then(response => {
       res.status(200).send({
         statusCode: 200,
         StatusMessage: "User Retrieved Successfully",
@@ -167,12 +199,21 @@ export class UserController {
       }
 
       else {
-      res.status(401).send({
+      res.status(500).send({
         statusCode: 500,
         statusMessage: "Something Went Wrong"
       })
     }  
     })
+
+  }
+
+  catch(err){
+    res.status(500).send({
+      statusCode: 500,
+      statuMessage: "Something Went Wrong"
+    })
+  }
   
 
   }
@@ -207,6 +248,8 @@ export class UserController {
   }
 
   public async createBulkUsers(req: Request, res: Response) {
+
+    
 
     let body = {
       "failOnErrors": 1,
