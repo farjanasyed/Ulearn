@@ -36,7 +36,7 @@ export class App {
   use = () => {
     this.app.use(bodyParser.json());
     this.app.use('/api', router);
-    this.app.use(cors({origin: 'http://localhost:61426', credentials: true}))
+    this.app.use(cors({origin: 'http://localhost:4200/', credentials: true}))
     const src = fs.readFileSync(path.join(__dirname, '../src/swagger.yaml'), 'utf8');
     const cwd = path.join(__dirname, 'foo');
     const schema = getSchema(cwd);
