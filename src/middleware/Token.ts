@@ -33,3 +33,9 @@ export const checkTokenValidity = (req: Request,res: Response, next: any) =>{
       next();
    }
 }
+
+export const setHeaders = (req :Request ,res: Response, next: any)=>{
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+next();
+}
