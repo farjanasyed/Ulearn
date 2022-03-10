@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/users', User.createUser);
 //router.get('/users/:id',User.getUserById);
-router.post('/authn/token',setHeaders, Auth.getAuthToken);
+router.post('/authn/token', Auth.getAuthToken);
 
 
 router.get('/users/me', checkTokenValidity,Auth.getUserInfo);

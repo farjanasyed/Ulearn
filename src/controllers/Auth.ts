@@ -1,13 +1,13 @@
 import AuthService from '../services/Auth';
 import { Request, Response } from 'express';
 import qs from 'qs';
+
 class AuthContrller {
     public async getAuthToken(req: Request, res: Response) {
 
         req.body["grant_type"] = "password"
         req.body["scope"]= "openid"
         req.body["username"] = req.body.userName;
-        console.log("Body:::",req.body);
         AuthService.getAuthToken(req.body).then(result => {
             console.log("result from token", result.status);
             if (result.status == 400) {
@@ -34,6 +34,7 @@ class AuthContrller {
             }
             else
                 res.status(401).send({
+                
                     statusCode: 401,
                     statusMessage: "Authorization Missing"
                 })
