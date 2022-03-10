@@ -35,7 +35,7 @@ export const checkTokenValidity = (req: Request,res: Response, next: any) =>{
 }
 
 export const setHeaders = (req :Request ,res: Response, next: any)=>{
-    res.header("Access-Control-Allow-Origin", "http://localhost:4200/");
+    res.header("Access-Control-Allow-Origin", "http://localhost:4200");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
