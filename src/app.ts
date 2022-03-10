@@ -10,6 +10,8 @@ import fs from 'fs';
 import jks from 'jks-js'
 import https from 'https';
 import { validateToken } from './middleware/Token';
+
+import cors from 'cors'
 let css = {
   customCss: `
     .topbar-wrapper img {content:url(\'../assets/unext-jan.png\'); width:300px; height:auto;}
@@ -34,6 +36,7 @@ export class App {
   use = () => {
     this.app.use(bodyParser.json());
     this.app.use('/api', router);
+    this.app.use(cors({origin: 'http://localhost:61426', credentials: true}))
     const src = fs.readFileSync(path.join(__dirname, '../src/swagger.yaml'), 'utf8');
     const cwd = path.join(__dirname, 'foo');
     const schema = getSchema(cwd);
