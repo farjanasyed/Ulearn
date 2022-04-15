@@ -14,10 +14,12 @@ router.post('/authn/token', Auth.getAuthToken);
 
 
 router.get('/users/me', checkTokenValidity,Auth.getUserInfo);
-router.post('/authn/refresh-token', Auth.getRefreshToken);
+router.post('/authn/refresh-token',validateToken, Auth.getRefreshToken);
 router.get('/users/verification',checkTokenValidity, User.verifyUser)
 router.post('/users/bulk',checkTokenValidity, User.createBulkUsers);
 router.post('/users/me/changePassword',checkTokenValidity,User.changePassword);
 router.get('/users',checkTokenValidity,User.getAllusers);
+router.delete('/users/:id',User.deleteUser);
+router.patch('/users/:id',User.editUser)
 
 export default router;

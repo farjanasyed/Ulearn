@@ -42,116 +42,112 @@ interface VerifyUser {
 export class UserController {
   public async createUser(req: Request, res: Response) {
 
-    try{
-    let user: User = {
-      name: {
-        givenName: req.body.firstName,
-        familyName: req.body.lastName
-      },
-      userName: req.body.userName,
-      
-      password: req.body.password ? req.body.password : "test@123",
-      emails: [req.body.email],
-      phoneNumbers: [{
-        type: "work",
-        value: req.body.mobileNumber.toString(),
-      }],
-      "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-        "verifyEmail": false
+    try {
+      let user: User = {
+        name: {
+          givenName: req.body.firstName,
+          familyName: req.body.lastName
+        },
+        userName: req.body.userName,
+        password: req.body.password ? req.body.password : "test@123",
+        emails: [req.body.email],
+        phoneNumbers: [{
+          type: "work",
+          value: req.body.mobileNumber.toString(),
+        }],
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+          "verifyEmail": false
+        }
       }
-    }
-    UserService.createUser(user).then(response => {
-      res.status(200).send({
-        statusCode: 200,
-        statuMessage: "User Created Successfully",
-        data: response.data
-      }
-      );
-    }).catch(error => {
-      console.log("Error:: Create User",error)
-      if(error && error.response.status == 400)
-      {
-        res.status(400).send({
-          statusCode: 400,
-          statuMessage:"Bad Request"
-        })
-      }
+      UserService.createUser(user).then(response => {
+        res.status(200).send({
+          statusCode: 200,
+          statuMessage: "User Created Successfully",
+          data: response.data
+        }
+        );
+      }).catch(error => {
+        console.log("Error:: Create User", error)
+        if (error && error.response.status == 400) {
+          res.status(400).send({
+            statusCode: 400,
+            statuMessage: "Bad Request"
+          })
+        }
 
-      if(error && error.response.status == 409 ){
-        res.status(409).send({
-          statusCode: 409,
-          statuMessage:"User already exist"
-        })
-      }
-     
-      else{
-        res.status(500).send({
-          statusCode: 500,
-          statuMessage: "Something Went Wrong"
-        })
-      }
-    })
-  } 
-  catch(error){
-    res.status(500).send({
-      statusCode: 500,
-      statuMessage: "Something Went Wrong"
-    })
-  }
+        if (error && error.response.status == 409) {
+          res.status(409).send({
+            statusCode: 409,
+            statuMessage: "User already exist"
+          })
+        }
+
+        else {
+          res.status(500).send({
+            statusCode: 500,
+            statuMessage: "Something Went Wrong"
+          })
+        }
+      })
+    }
+    catch (error) {
+      res.status(500).send({
+        statusCode: 500,
+        statuMessage: "Something Went Wrong"
+      })
+    }
   }
 
 
   public async changePassword(req: Request, res: Response) {
-    console.log("ChangePassword Request",req.body)
+    console.log("ChangePassword Request", req.body)
 
     try {
-     AuthService.getUserInfo(req.headers.authorization).then((useInfo:any)=>{
-         console.log("Res",res);
-         let userData : any ={
-          userName : useInfo?.data?.userName,
+      AuthService.getUserInfo(req.headers.authorization).then((useInfo: any) => {
+        console.log("Res", res);
+        let userData: any = {
+          userName: useInfo?.data?.userName,
           password: req.body.newPassword
-         }
-          UserService.changePassword(useInfo.data.id,userData,req.headers.authorization).then(response => {
-            return res.status(200).send({
-              statusCode: 200,
-              statuMessage: "Password Updated Successfully",
-              data: response.data
-            });
-          }).catch(error => {
-            console.log("Error:: Create User",error)
-            if(error && error.response.status == 400)
-            {
-              res.status(400).send({
-                statusCode: 400,
-                statuMessage:"Bad Request"
-              })
-            }
-            if(error && error.response.status == 401){
-             return res.status(401).send({
-                statusCode: 401,
-                statuMessage: "Authentication failed"
-              })
-            }
-            else{
-             return res.status(500).send({
-                statusCode: 500,
-                statuMessage: "Something Went Wrong"
-              })
-            }
-          })
-      
-     }).catch(err=>{
-        if(err && err.response && err.response.status == 401 )
-          {
-           return  res.status(401).send({
-              statusCode: 401,
-              statuMessage: "Unauthorized to perform this operation"
-             })
+        }
+        UserService.changePassword(useInfo.data.id, userData, req.headers.authorization).then(response => {
+          return res.status(200).send({
+            statusCode: 200,
+            statuMessage: "Password Updated Successfully",
+            data: response.data
+          });
+        }).catch(error => {
+          console.log("Error:: Create User", error)
+          if (error && error.response.status == 400) {
+            res.status(400).send({
+              statusCode: 400,
+              statuMessage: "Bad Request"
+            })
           }
-     })
-   
+          if (error && error.response.status == 401) {
+            return res.status(401).send({
+              statusCode: 401,
+              statuMessage: "Authentication failed"
+            })
+          }
+          else {
+            return res.status(500).send({
+              statusCode: 500,
+              statuMessage: "Something Went Wrong"
+            })
+          }
+        })
+
+      }).catch(err => {
+        if (err && err.response && err.response.status == 401) {
+          return res.status(401).send({
+            statusCode: 401,
+            statuMessage: "Unauthorized to perform this operation"
+          })
+        }
+      })
+
     }
-    catch(err){
+    catch (err) {
       return res.status(500).send({
         statusCode: 500,
         statuMessage: "Something Went Wrong"
@@ -162,29 +158,29 @@ export class UserController {
   public async getUserById(req: Request, res: Response) {
 
     try {
-    let userId = req.params.id
-    UserService.getUserById(userId,req.headers.authorization).then(response => {
-      res.status(200).send({
-        statusCode: 200,
-        StatusMessage: "User Retrieved Successfully",
-        data: response.data
+      let userId = req.params.id
+      UserService.getUserById(userId, req.headers.authorization).then(response => {
+        res.status(200).send({
+          statusCode: 200,
+          StatusMessage: "User Retrieved Successfully",
+          data: response.data
+        })
+      }).catch(err => {
+        res.status(500).send({
+          statusCode: 500,
+          statusMessage: "Something Went Wrong"
+        })
       })
-    }).catch(err => {
+    }
+
+    catch (err) {
+
       res.status(500).send({
         statusCode: 500,
-        statusMessage: "Something Went Wrong"
+        statuMessage: "Something Went Wrong"
       })
-    })
-  }
 
-  catch(err){
-
-    res.status(500).send({
-      statusCode: 500,
-      statuMessage: "Something Went Wrong"
-    })
-
-  }
+    }
 
   }
 
@@ -193,38 +189,38 @@ export class UserController {
   public async getAllusers(req: Request, res: Response) {
 
     try {
-    UserService.getAllUsers(req.headers.authorization).then(response => {
-      res.status(200).send({
-        statusCode: 200,
-        StatusMessage: "User Retrieved Successfully",
-        data: response.data
-      })
-    }).catch(err => {
-      console.log("err",err);
-      if(err && err.response && err.response.status == 401){
-        res.status(401).send({
-          statusCode: 401,
-          statusMessage: "Unauthorized"
+      UserService.getAllUsers(req.headers.authorization).then(response => {
+        res.status(200).send({
+          statusCode: 200,
+          StatusMessage: "User Retrieved Successfully",
+          data: response.data
         })
-      }
+      }).catch(err => {
+        console.log("err", err);
+        if (err && err.response && err.response.status == 401) {
+          res.status(401).send({
+            statusCode: 401,
+            statusMessage: "Unauthorized"
+          })
+        }
 
-      else {
+        else {
+          res.status(500).send({
+            statusCode: 500,
+            statusMessage: "Something Went Wrong"
+          })
+        }
+      })
+
+    }
+
+    catch (err) {
       res.status(500).send({
         statusCode: 500,
-        statusMessage: "Something Went Wrong"
+        statuMessage: "Something Went Wrong"
       })
-    }  
-    })
+    }
 
-  }
-
-  catch(err){
-    res.status(500).send({
-      statusCode: 500,
-      statuMessage: "Something Went Wrong"
-    })
-  }
-  
 
   }
   public async verifyUser(req: Request, res: Response) {
@@ -258,28 +254,6 @@ export class UserController {
   }
 
   public async createBulkUsers(req: Request, res: Response) {
-    let body = {
-      "failOnErrors": 1,
-      "schemas": [
-        "urn:ietf:params:scim:api:messages:2.0:BulkRequest"
-      ],
-      "Operations": [
-        {
-          "method": "POST",
-          "path": "/Users",
-          "bulkId": "ytrewq",
-          "data": {
-            "schemas": [
-              "urn:ietf:params:scim:schemas:core:2.0:User"
-            ],
-            "userName": "jesse",
-            "password": "jesspass"
-          }
-
-        }
-      ]
-    }
-
     let operations = req.body.map(user => {
       return {
         "method": "POST",
@@ -317,7 +291,7 @@ export class UserController {
       Operations: operations
 
     }
-    UserService.createBulkUsers(bulkUsersBody,req.headers.authorization).then(response => {
+    UserService.createBulkUsers(bulkUsersBody, req.headers.authorization).then(response => {
       console.log("response", response);
       res.status(200).send({
         status: 200,
@@ -332,6 +306,82 @@ export class UserController {
     })
 
   }
+
+
+  public async editUser(req: Request, res: Response) {
+
+    console.log("req", req.body['familyName']);
+
+    const userId = req.params['id']
+
+    let user = {
+      "schemas": ["urn:scim:schemas:core:1.0"], "meta": { "attributes": [] }
+    }
+
+
+    user = Object.assign(user,req.body)
+
+    console.log("user",user);
+
+    // if (req.body['firstName'] !== undefined) {
+    //   console.log("undefined")
+    //    user["name"]["familyName"] = req.body['familyName']
+    // }
+    // if(req.body['lastName'] !== undefined){
+    //   user["name"]["givenName"] = req.body['lastName']
+    // }
+    UserService.updateUser(userId,user).then(response => {
+      console.log("INFO:Response::UpdateUser",response);
+      res.status(200).send({
+        status: 200,
+        data: req.body,
+        statusMessage: "User Updated Successfully"
+      })
+    }).catch(err => {
+      console.log("err", err);
+      if (err && err.response && err.response.status == 404) {
+        return res.status(404).send({
+          statusCode: 404,
+          statusMessage: "Specified User Not found"
+        })
+      }
+      else
+        res.status(500).send({
+          statusCode: 500,
+          statusMessage: "Something Went wrong"
+        })
+
+    })
+
+
+  }
+
+  public async deleteUser(req: Request, res: Response) {
+    console.log("request", req);
+    let userId = req.params["id"];
+    UserService.deleteUser(userId).then(response => {
+      res.status(200).send({
+        status: 200,
+        data: 'User Deleted Successfully'
+      })
+    }).catch(err => {
+      console.log("err", err);
+      if (err && err.response && err.response.status == 404) {
+        return res.status(404).send({
+          statusCode: 404,
+          statusMessage: "Specified User Not found"
+        })
+      }
+      else
+        res.status(500).send({
+          statusCode: 500,
+          statusMessage: "Something Went wrong"
+        })
+    })
+  }
+
 }
+
+
 
 export default new UserController();

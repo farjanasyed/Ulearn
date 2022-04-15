@@ -100,6 +100,23 @@ class UserService {
 
     }
 
+    async deleteUser(userId: String){
+        return axios.delete(`${process.env.WSO2_URL}/wso2/scim/Users/${userId}`,{
+            headers: {
+                "Content-Type": "application/json",
+            },
+            auth: {
+                username: 'admin',
+                password: 'admin'
+            },
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            })
+        })
+    }
+
     async createBulkUsers(data: any, token: any) {
         return axios.post(`${process.env.WSO2_URL}/scim2/Bulk`, data, {
             headers: {
@@ -125,6 +142,20 @@ class UserService {
                 "Authorization": token
             }
            
+        })
+    }
+
+    async updateUser(userId,body){
+        return axios.patch(`${process.env.WSO2_URL}/wso2/scim/Users/${userId}`,body,{
+            auth: {
+                username: 'admin',
+                password: 'admin'
+            },
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            })
         })
     }
 }
