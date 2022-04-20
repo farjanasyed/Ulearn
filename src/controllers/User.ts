@@ -53,7 +53,7 @@ export class UserController {
         emails: [req.body.email],
         phoneNumbers: [{
           type: "work",
-          value: req.body.mobileNumber.toString(),
+          value: req.body.mobileNumber == null ? "" : req.body.mobileNumber.toString(),
         }],
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
           "verifyEmail": false
