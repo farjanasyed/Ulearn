@@ -40,7 +40,7 @@ class AuthService {
                 rejectUnauthorized: false
             }),
             headers:{
-                "Authorization":`${accessToken}`
+                "Authorization":`Bearer ${accessToken}`
             }
         })
     }
