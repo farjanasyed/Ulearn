@@ -3,6 +3,7 @@ import * as express from "express";
 import User from "./controllers/User";
 import Auth from "./controllers/Auth"
 import { checkTokenValidity, setHeaders, validateToken } from "./middleware/Token";
+import Role from "./controllers/Role";
 const router = express.Router();
 
 
@@ -20,6 +21,8 @@ router.post('/users/bulk',checkTokenValidity, User.createBulkUsers);
 router.post('/users/me/changePassword',checkTokenValidity,User.changePassword);
 router.get('/users',checkTokenValidity,User.getAllusers);
 router.delete('/users/:id',User.deleteUser);
-router.patch('/users/:id',User.editUser)
+router.patch('/users/:id',User.editUser);
+router.post('/roles',Role.assignRoleToUser);
+router.post('/roles/bulk',Role.createBulkRoles);
 
 export default router;

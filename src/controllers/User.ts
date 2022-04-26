@@ -110,6 +110,7 @@ export class UserController {
           password: req.body.newPassword
         }
         UserService.changePassword(useInfo.data.id, userData, req.headers.authorization).then(response => {
+          console.log("resonse", response)
           return res.status(200).send({
             statusCode: 200,
             statuMessage: "Password Updated Successfully",
@@ -158,12 +159,15 @@ export class UserController {
   public async getUserById(req: Request, res: Response) {
 
     try {
-      let userId = req.params.id
-      UserService.getUserById(userId, req.headers.authorization).then(response => {
+      let userId = req.params.id;
+      let userResponse = {
+
+      }
+      UserService.getUserById(userId, req.headers.authorization).then((response: any) => {
         res.status(200).send({
           statusCode: 200,
           StatusMessage: "User Retrieved Successfully",
-          data: response.data
+          data: userResponse
         })
       }).catch(err => {
         res.status(500).send({
@@ -315,23 +319,35 @@ export class UserController {
     const userId = req.params['id']
 
     let user = {
-      "schemas": ["urn:scim:schemas:core:1.0"], "meta": { "attributes": [] }
+      "schemas": ["urn:scim:schemas:core:1.0"],
+      "name":{
+
+      }, "meta": { "attributes": [] }
     }
 
+    console.log("user", user);
 
-    user = Object.assign(user,req.body)
+    if (req.body['firstName']) {
+      user["name"]["familyName"] = req.body['firstName']
+    }
+    if (req.body['lastName']) {
+      user["name"]["givenName"] = req.body['lastName']
+    }
+    if (req.body['phoneNumber']) {
 
-    console.log("user",user);
+      user["phoneNumbers"] = [];
+      user["phoneNumbers"].push({"type":"work","value":req.body['phoneNumber']})
 
-    // if (req.body['firstName'] !== undefined) {
-    //   console.log("undefined")
-    //    user["name"]["familyName"] = req.body['familyName']
-    // }
-    // if(req.body['lastName'] !== undefined){
-    //   user["name"]["givenName"] = req.body['lastName']
-    // }
-    UserService.updateUser(userId,user).then(response => {
-      console.log("INFO:Response::UpdateUser",response);
+    }
+    if (req.body["emails"]) {
+      user["emails"] = [];
+      user["emails"].push(req.body['email'])
+    }
+    if (req.body["userName"]) {
+      user["userName"] = req.body["userName"]
+    }
+    UserService.updateUser(userId, user).then(response => {
+      console.log("INFO:Response::UpdateUser", response);
       res.status(200).send({
         status: 200,
         data: req.body,
@@ -348,7 +364,7 @@ export class UserController {
       else
         res.status(500).send({
           statusCode: 500,
-          statusMessage: "Something Went wrong"
+          statusMessage: "User Name is not Mutable and It's Manditory Filed"
         })
 
     })

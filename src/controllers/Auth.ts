@@ -41,11 +41,23 @@ class AuthContrller {
         })
     }
     public async getUserInfo(req: Request, res: Response) {
-        AuthService.getUserInfo(req.headers.authorization).then(result => {
+        AuthService.getUserInfo(req.headers.authorization).then((result:any) => {
             console.log("GETUSER::Error",result);
+
+            let userResponse = {};
+
+            if(result.status == 200){
+
+                userResponse["email"] = result.data?.emails ? result.data?.emails[0] :"" ;
+                userResponse["phoneNumber"] = result.data?.phoneNumbers ? result.data?.phoneNumbers[0].value: ""
+                userResponse["firstName"] = result.data?.name?.givenName ? result.data?.name?.givenName : "";
+                userResponse["familyName"] = result.data?.name?.familyName ? result.data?.name.familyName : "";
+                userResponse["roles"] = result.data?.roles;
+     
+             }
             res.status(200).send({
                 statusMessage: "User Retrieved Successfully",
-                data: result.data
+                data: userResponse
             })
         }).catch(err => {
             console.log("GETUSER::Error",err);
