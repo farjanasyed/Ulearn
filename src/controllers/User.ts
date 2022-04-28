@@ -384,7 +384,7 @@ export class UserController {
               "op": "replace",
               "value": {
                   "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-                      "accountDisabled": "true"
+                      "accountDisabled": req.body["isActive"]
                   }
               }
           }
@@ -393,7 +393,7 @@ export class UserController {
     UserService.deleteUser(upateRequest,userId).then(response => {
       res.status(200).send({
         status: 200,
-        data: 'User Deleted Successfully'
+        data: req.body["isActive"] ? 'User Activated' : 'User Deactivated'
       })
     }).catch(err => {
       console.log("err", err);
