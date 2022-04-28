@@ -51,6 +51,10 @@ class AuthService {
                 key: key,
                 rejectUnauthorized: false
             }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+               
+            },
             auth: {
                username : process.env.Web_Client_Id,
                password: process.env.Web_Client_Secret

@@ -70,7 +70,8 @@ class AuthContrller {
     public async getRefreshToken(req: Request, res: Response) {
 
         req.body["grant_type"] = "refresh_token",
-        req.body["scope"]  = "openid"
+        req.body["scope"]  = "openid",
+        req.body["access_token"] = req.headers['access-token'] as string,
         AuthService.getRefreshToken(req.body).then(result => {
             res.status(200).send({
                 statusCode: 200,
