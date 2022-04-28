@@ -372,10 +372,25 @@ export class UserController {
 
   }
 
-  public async deleteUser(req: Request, res: Response) {
+  public async disableUser(req: Request, res: Response) {
     console.log("request", req);
     let userId = req.params["id"];
-    UserService.deleteUser(userId).then(response => {
+    let upateRequest = {
+      "schemas": [
+          "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+      ],
+      "Operations": [
+          {
+              "op": "replace",
+              "value": {
+                  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+                      "accountDisabled": "true"
+                  }
+              }
+          }
+      ]
+  }
+    UserService.deleteUser(upateRequest,userId).then(response => {
       res.status(200).send({
         status: 200,
         data: 'User Deleted Successfully'

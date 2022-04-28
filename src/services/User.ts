@@ -100,8 +100,8 @@ class UserService {
 
     }
 
-    async deleteUser(userId: String){
-        return axios.delete(`${process.env.WSO2_URL}/wso2/scim/Users/${userId}`,{
+    async deleteUser(body:any,userId: String){
+        return axios.patch(`${process.env.WSO2_URL}/scim2/Users/${userId}`,body,{
             headers: {
                 "Content-Type": "application/json",
             },
@@ -139,7 +139,7 @@ class UserService {
             }),
 
             headers:{
-                "Authorization":`${token}`
+                "Authorization":`Bearer ${token}`
             }
            
         })

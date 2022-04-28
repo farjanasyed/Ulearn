@@ -1,6 +1,23 @@
 import RoleService from '../services/Role';
 import { Request, Response } from 'express';
 import qs from 'qs';
+import async from 'async'
+import { resolve } from 'path';
+
+
+
+
+
+
+let finalData = []
+
+
+const getAllUserById = (roles: any) => {
+    return Promise.all(roles.map(async (role) => {
+        return await RoleService.getRoleById(role.roleId)
+
+    }));
+}
 
 export class RoleController {
     public async assignRoleToUser(req: Request, res: Response) {
@@ -16,7 +33,6 @@ export class RoleController {
             ],
             "displayName": req.body.roleName,
             "users": users,
-
             "permissions": req.body.permissions
         }
 
@@ -46,7 +62,6 @@ export class RoleController {
             }
             else if (error.response.status == 401) {
                 res.status(401).send({
-
                     statusCode: 401,
                     statusMessage: "Authorization Missing"
                 })
@@ -72,7 +87,6 @@ export class RoleController {
     }
 
     public async createBulkRoles(req: Request, res: Response) {
-
         let roleRequest = {
             "failOnErrors": 1,
             "schemas": [
@@ -89,55 +103,55 @@ export class RoleController {
                     "displayName": role.name,
                     "permissions": role.permissions,
                 },
-                "method": req.body.method,
+                "method": "POST",
                 "path": '/Roles',
-                "bulkId": req.body.id,
+                "bulkId": "ywvjz",
             }
-
-
         });
-  
-        roleRequest["Operations"] = roles;
-        console.log("Roles",JSON.stringify(roleRequest));
-        RoleService.createRolesInBulk(roleRequest).then((result:any) => {
-            console.log("result from token", result);
 
+        roleRequest["Operations"] = roles;
+        RoleService.createRolesInBulk(roleRequest).then(async (result: any) => {
             if (result.status == 400) {
-                console.log("Result", result);
                 res.status(400).send({
                     statusCode: 400,
                     statusMessage: "Bad Request",
                     data: result.data
                 })
             }
-            else if(result.status == 200){
-                 result.data?.Operations.forEach((operation:any)=>{
-                     console.log("Res",operation);
-                    if(operation.status.code == 409){
-                        return res.status(409).send({
-                            statusCode: 409,
-                            statusMessage: "This Role already exist",
-                            data: result.data
-                        })
+            else if (result.data.Operations[0].status.code == 409) {
+                return res.status(409).send({
+                    statusCode: 409,
+                    statusMessage: "This Role already exist",
+                    data: result.data
+                })
+            }
+
+            else {
+                const roleList = result.data.Operations.map((operation: any) => {
+                    return {
+                        roleId: operation.location ? operation.location.substring(operation.location.lastIndexOf('/') + 1) : []
                     }
                 })
-
-
+                if (roleList.length > 0) {
+                    getAllUserById(roleList).then(result => {
+                        const roleData = result.map(role => {
+                            return {
+                                roleId: role.data.id,
+                                roleName: role.data.displayName,
+                                permissions: role.data.permissions ? role.data.permissions : []
+                            }
+                        })
+                        return res.status(200).send({
+                            statusCode: 200,
+                            statusMessage: "List of Roles",
+                            data: roleData
+                        })
+                    })
+                }
             }
-            const roleList = result.data.Operations.map((operation:any)=>{
-                 return {
-                     roleId: operation.location.substring(operation.location.lastIndexOf('/')+1)
-                 }
-            })
 
-            console.log("Role List",roleList);
-                res.status(200).send({
-                    statusCode: 200,
-                    statusMessage: "Roles Retrieved Successfully",
-                    data: roleList
-                })
+
         }).catch(error => {
-            console.log("Error", error);
             if (error.response.status == 400) {
                 res.status(400).send({
                     statusCode: 400,
@@ -146,7 +160,6 @@ export class RoleController {
             }
             else if (error.response.status == 401) {
                 res.status(401).send({
-
                     statusCode: 401,
                     statusMessage: "Authorization Missing"
                 })
@@ -154,7 +167,6 @@ export class RoleController {
             }
             else if (error.response.status == 409) {
                 res.status(409).send({
-
                     statusCode: 409,
                     statusMessage: "Role already  exist"
                 })
@@ -162,7 +174,6 @@ export class RoleController {
             }
             else {
                 res.status(500).send({
-
                     statusCode: 500,
                     statusMessage: "Somethingwent wrong"
                 })
@@ -172,40 +183,33 @@ export class RoleController {
 
 
     }
-    // public async getUserInfo(req: Request, res: Response) {
-    //     AuthService.getUserInfo(req.headers.authorization).then(result => {
-    //         console.log("GETUSER::Error",result);
-    //         res.status(200).send({
-    //             statusMessage: "User Retrieved Successfully",
-    //             data: result.data
-    //         })
-    //     }).catch(err => {
-    //         console.log("GETUSER::Error",err);
-    //         res.status(401).send({
-    //             statusCode: 401,
-    //             statusMessage: "Unathorized or Missing token"
-    //         })
-    //     })
-    // }
-    // public async getRefreshToken(req: Request, res: Response) {
-
-    //     req.body["grant_type"] = "refresh_token",
-    //     req.body["scope"]  = "openid"
-    //     AuthService.getRefreshToken(req.body).then(result => {
-    //         res.status(200).send({
-    //             statusCode: 200,
-    //             statusMessage: "Token Renewed Successfully",
-    //             data: result.data
-    //         })
-    //     }).catch(err => {
-    //         console.log('err', err);
-    //         res.status(500).send({
-    //             statusCode: 500,
-    //             statusMessage: "Something Went wrong"
-    //         })
-    //     })
-    // }
+    public async getRoleById(req: Request, res: Response) {
+        RoleService.getRoleById(req.params.id).then((result:any) => {
+            console.log("Get Role::Error", result);
+            if(result.status == 200){
+                const role = {
+                    roleId : result.data?.id,
+                    roleName: result.data?.displayName,
+                    permissions: result.data.permissions ? result.data.permissions : []
+                }
+                res.status(200).send({
+                    statusMessage: "Role Retrieved Successfully",
+                    data: role
+                })
+            }
+           
+        }).catch(err => {
+            console.log("Get Role::Error", err);
+            res.status(401).send({
+                statusCode: 401,
+                statusMessage: "Unathorized or Missing token"
+            })
+        })
+    }
 }
+
+
+
 
 
 export default new RoleController();
