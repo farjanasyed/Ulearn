@@ -6,7 +6,8 @@ import jwt_decode from "jwt-decode";
 
 
 export const validateToken = (req: Request, res: Response, next: any) => {
-   const decodedToken: any = jwt_decode(req.body["access_token"]);
+   const access_token = req.headers["access_token"] as string;
+   const decodedToken: any = req.body["access_token"] ? jwt_decode(req.body["access_token"]) : jwt_decode(access_token);
    if (new Date(decodedToken.exp * 1000) <= new Date()) {
       res.status(401).send({
          stausCode: 401,
