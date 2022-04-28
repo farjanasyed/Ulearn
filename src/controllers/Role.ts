@@ -1,15 +1,7 @@
 import RoleService from '../services/Role';
 import { Request, Response } from 'express';
 import qs from 'qs';
-import async from 'async'
-import { resolve } from 'path';
 
-
-
-
-
-
-let finalData = []
 
 
 const getAllUserById = (roles: any) => {
