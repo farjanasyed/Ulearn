@@ -71,7 +71,7 @@ export class RoleController {
                 res.status(500).send({
 
                     statusCode: 500,
-                    statusMessage: "Somethingwent wrong"
+                    statusMessage: "Users are not exist"
                 })
 
             }
@@ -176,11 +176,11 @@ export class RoleController {
 
     }
     public async getRoleById(req: Request, res: Response) {
-        RoleService.getRoleById(req.params.id).then((result:any) => {
+        RoleService.getRoleById(req.params.id).then((result: any) => {
             console.log("Get Role::Error", result);
-            if(result.status == 200){
+            if (result.status == 200) {
                 const role = {
-                    roleId : result.data?.id,
+                    roleId: result.data?.id,
                     roleName: result.data?.displayName,
                     permissions: result.data.permissions ? result.data.permissions : []
                 }
@@ -189,7 +189,7 @@ export class RoleController {
                     data: role
                 })
             }
-           
+
         }).catch(err => {
             console.log("Get Role::Error", err);
             res.status(401).send({
@@ -198,6 +198,156 @@ export class RoleController {
             })
         })
     }
+
+    public async getAllRoles(req: Request, res: Response) {
+        RoleService.getAllRoles().then((response: any) => {
+            if (response.status == 200) {
+                let roles = response.data?.Resources.map(res => {
+                    return {
+                        roleId: res.displayName,
+                        roleName: res.displayName,
+                        permissions: res.permissions ? res.permissions : []
+                    }
+                })
+                res.status(200).send({
+                    statusCode: 200,
+                    statusMessage: "Roles Retrieved Successfully",
+                    data: roles
+                })
+            }
+
+        }).catch(err => {
+            console.log("Get Role::Error", err);
+            res.status(401).send({
+                statusCode: 401,
+                statusMessage: "Unathorized or Missing token"
+            })
+
+        })
+
+    }
+
+
+    public async revokUsers(req: Request, res: Response) {
+        let users = req.body.users.map(user => {
+            return {
+                value: user
+            }
+        })
+        let request = {
+            "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            ],
+            "Operations": [
+                {
+                    "op": "remove",
+                    "path": "users",
+                    "value": users
+                }
+            ]
+        }
+
+        RoleService.updateRole(req.params.id, request).then(response => {
+            let resBody = {};
+            resBody["roleId"] = response.data["id"];
+            resBody["roleName"] = response.data["displayName"]
+            if (response.status == 200) {
+
+                return res.status(200).send({
+                    statusCode: 200,
+                    statusMessage: "Roles Revoked to the users",
+                    datat: resBody
+
+                })
+
+            }
+
+
+        }).catch(err => {
+            if (err.response.status == 400) {
+                res.status(400).send({
+                    statusCode: 400,
+                    statusMessage: "Bad Request"
+                })
+            }
+            else if (err.response.status == 401) {
+                res.status(401).send({
+                    statusCode: 401,
+                    statusMessage: "Authorization Missing"
+                })
+
+            }
+            else {
+                res.status(200).send({
+                    statusCode: 404,
+                    statusMessage: "Users Not Found"
+                })
+
+            }
+
+        })
+
+
+    }
+
+
+    public async addUsersToRole(req: Request, res: Response) {
+        let users = req.body.users.map(user => {
+            return {
+                value: user
+            }
+        })
+        let request = {
+            "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            ],
+            "Operations": [
+                {
+                    "op": "add",
+                    "path": "users",
+                    "value": users
+                }
+            ]
+        }
+
+        RoleService.assignUsers(req.params.id, request).then(response => {
+            console.log("Role Response", response);
+            let resBody = {};
+            resBody["roleId"] = response.data["id"];
+            resBody["roleName"] = response.data["displayName"]
+            if (response.status == 200) {
+
+                return res.status(200).send({
+                    statusCode: 200,
+                    statusMessage: "Users assigned to Role",
+                    datat: resBody
+
+                })
+            }
+        }).catch(err => {
+            if (err.response.status == 400) {
+                res.status(400).send({
+                    statusCode: 400,
+                    statusMessage: "Bad Request"
+                })
+            }
+            else if (err.response.status == 401) {
+                res.status(401).send({
+                    statusCode: 401,
+                    statusMessage: "Authorization Missing"
+                })
+
+            }
+            else {
+                res.status(200).send({
+                    statusCode: 404,
+                    statusMessage: "Users Not Found"
+                })
+
+            }
+        })
+    }
+
 }
 
 

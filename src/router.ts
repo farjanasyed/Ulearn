@@ -22,6 +22,9 @@ router.delete('/users/:id',User.disableUser);
 router.patch('/users/:id',User.editUser);
 router.post('/roles',Role.assignRoleToUser);
 router.post('/roles/bulk',Role.createBulkRoles);
+router.post('/roles/addUsers/:id',Role.addUsersToRole);
+router.post('/roles/revokeUsers/:id',Role.revokUsers)
 router.get('/roles/:id',Role.getRoleById);
+router.get('/roles',Role.getAllRoles)
 
 export default router;
