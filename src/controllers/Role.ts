@@ -204,7 +204,7 @@ export class RoleController {
             if (response.status == 200) {
                 let roles = response.data?.Resources.map(res => {
                     return {
-                        roleId: res.displayName,
+                        roleId: res.id,
                         roleName: res.displayName,
                         permissions: res.permissions ? res.permissions : []
                     }
