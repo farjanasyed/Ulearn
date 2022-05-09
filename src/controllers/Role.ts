@@ -292,7 +292,7 @@ export class RoleController {
 
     public async updateRoleById(req: Request, res: Response) {
         
-        let users = req.body.users.map((user:any) => {
+        let users = req.body.users && req.body.users?.map((user:any) => {
 
             return {
                 value : user
