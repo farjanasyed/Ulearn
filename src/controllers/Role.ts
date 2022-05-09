@@ -290,6 +290,64 @@ export class RoleController {
 
     }
 
+    public async updateRoleById(req: Request, res: Response) {
+        
+        let users = req.body.users.map((user:any) => {
+
+            return {
+                value : user
+            }
+        });
+
+      let role =   {
+            "displayName": req.body.roleName,
+            "users": users,
+            "permissions": req.body.permissions
+          }
+        RoleService.updateRoleById(req.params.id,role).then((result: any) => {
+            console.log("Get Role::Error", result);
+            if (result.status == 200) {
+                const role = {
+                    roleId: result.data?.id,
+                    roleName: result.data?.displayName,
+                    permissions: result.data.permissions ? result.data.permissions : []
+                }
+                res.status(200).send({
+                    statusMessage: "Updated Role Successfully",
+                    data: role
+                })
+            }
+
+        }).catch(err => {
+            console.log("Get Role::Error", err);
+            if (err.response.status == 400) {
+                res.status(400).send({
+                    statusCode: 400,
+                    statusMessage: "Bad Request"
+                })
+            }
+            else if (err.response.status == 401) {
+                res.status(401).send({
+                    statusCode: 401,
+                    statusMessage: "Authorization Missing"
+                })
+
+            }
+            else if (err.response.status == 409){
+                res.status(409).send({
+                    statusCode: 409,
+                    statusMessage: "Role Name already exist"
+                })
+
+            }
+            else {
+                res.status(500).send({
+                    statusCode: 500,
+                    statusMessage: "User doesn't exist"
+                })
+            }
+        })
+    }
 
     public async addUsersToRole(req: Request, res: Response) {
         let users = req.body.users.map(user => {

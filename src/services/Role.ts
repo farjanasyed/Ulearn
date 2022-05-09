@@ -132,6 +132,26 @@ class RoleService {
 
 
     }
+
+    async updateRoleById(roleId: string,body: any){
+        return axios.put(`${process.env.WSO2_URL}/scim2/Roles/${roleId}`,body,{
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            }),
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            auth:{
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            }
+        })
+
+
+    }
    
    
 }
