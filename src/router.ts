@@ -26,6 +26,7 @@ router.post('/roles/addUsers/:id',Role.addUsersToRole);
 router.post('/roles/revokeUsers/:id',Role.revokUsers)
 router.get('/roles/:id',Role.getRoleById);
 router.get('/roles',Role.getAllRoles);
-router.put('/roles/:id',Role.updateRoleById)
+router.put('/roles/:id',Role.updateRoleById);
+router.post('/users/me/forgotPassword',User.forgotPassword)
 
 export default router;

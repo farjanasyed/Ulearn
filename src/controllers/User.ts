@@ -1,10 +1,19 @@
 import { Request, response, Response } from 'express';
 const url = require('url');
 import AuthService from '../services/Auth';
-
 import UserService from '../services/User';
 import QueryString from 'query-string';
 import console from 'console';
+
+const { Consumer } = require('sqs-consumer');
+const AWS = require('aws-sdk');
+
+// AWS.config.update({
+//   region: 'ap-south-1',
+//   accessKeyId: 'ASIA24YBCO4UU3QN3V7E',
+//   secretAccessKey: 'rvQUUDJx7HWrUzLIn6K73ST2SVl09fFqGZHPhGgV',
+//   sessionToken:'IQoJb3JpZ2luX2VjECAaCmFwLXNvdXRoLTEiRzBFAiEAg8DfznJX5/8zkXbiVuGcM0TyD9M/V51PW+fVx5+WMu8CICnjzV9O3cf05Tqtb/XDR/7gIJPSErcgvoM4eXOFsuitKp8DCOn//////////wEQARoMNzQ4OTM3MTgwOTY5Igx6fIo5bJVnv8SPNcMq8wJLHlgFKAmta4jxk9+K4gQbJQx7r9RUFTv+5B9OSfRkQD1jNlAiz9E/+ysEybboQMxh5YKRSgOdfkIMD6LNrmZaqWpAL7YeJxW8Aut/hN64Vl5Mg9tknnTyBgeYqkqvMlJoxysOOJPG2mY8YDYbUjry1CWekPQK5S/+AUhjW0zbDgHyUOyQK7i0H0dQ+xDngfE4CqhwZ3G5jVT2QN4zotSxxCKuFTeO1riZpM8gNxQqi1GtUaGFPEIdyAR+cuSEKONC/EcG1Jj+7Lvf3RcCTzySd893vHBmR7zXJahUd7HhUR2MC7Pl+/xHGtwhDDk/sy4M1bXHQv7MjkILcGRKwBgSEmgn4j2DOCKSHR1ai4RUouyAhov9LeVZuLSzkK9fKImijlPKhcDcHbf7JHioIV0P17TynhO0zyOkJ3lp/qTE2UuaL+rYeYHxv8jmGNafOGehACqiU7a72FDqnxebIqa6CUQ+tG1kgzRgnPKiT1peLYL2MjCxmuOTBjqmAQ763VsG0GdnHhgB/3grjk0CPAv0yNC3FsfRBEaKxv6IsrwVyCTQUf5uTjiTezfiA9s2Qz3k/y0mMcuVQi4DpKhujiwJiNKeItfWz5024tyY8c975Q08wi3HLuUPmLW6FzX+hmppBMzH0Vs19H+UTU746ShNhxjpO2E8jZ2lWYvueCCdUeOcXAWGPb+J/WAMNhD6O5mrJgxuggBtQ98eUbugXCm0K2U='
+// })
 
 interface PhoneNumbers {
   type: string,
@@ -42,6 +51,23 @@ interface VerifyUser {
 export class UserController {
   public async createUser(req: Request, res: Response) {
 
+    // const app = Consumer.create({
+    //   queueUrl: 'https://sqs.ap-south-1.amazonaws.com/748937180969/queue-ap-south-1-wso2-local',
+    //   handleMessage: async (message:any) => {
+    //     console.log("message",message);
+    //   //  message = JSON.stringify(message);
+      
+    //   },
+    //   sqs: new AWS.SQS()
+    // });
+    // app.on('error', (err) => {
+    //   console.error(err.message);
+    // });
+    
+    // app.on('processing_error', (err) => {
+    //   console.error(err.message);
+    // });
+    // app.start();
     try {
       let user: User = {
         name: {
@@ -411,7 +437,56 @@ export class UserController {
     })
   }
 
+
+  public async forgotPassword(req: Request, res: Response) {
+    console.log("ChangePassword Request", req.body)
+
+    const userRequest = {
+      "user": {
+          "username": req.body.userName,
+          "realm": "",
+          "tenant-domain": ""
+      },
+      "properties": []
+  }
+      
+        UserService.forgotPassword(userRequest).then(response => {
+          console.log("resonse", response)
+          return res.status(200).send({
+            statusCode: 200,
+            statuMessage: "Mail sent to reset the password",
+            data: response.data
+          });
+        }).catch(error => {
+          console.log("Error::FORGOTPASSWORD", error)
+          if (error && error.response.status == 400) {
+            res.status(400).send({
+              statusCode: 400,
+              statuMessage: "Bad Request"
+            })
+          }
+          if (error && error.response.status == 401) {
+            return res.status(401).send({
+              statusCode: 401,
+              statuMessage: "Authentication failed"
+            })
+          }
+          else {
+            return res.status(500).send({
+              statusCode: 500,
+              statuMessage: "Something Went Wrong"
+            })
+          }
+        })
+
+      
+    }
+  
+
 }
+
+
+
 
 
 
