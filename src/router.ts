@@ -5,6 +5,7 @@ import Auth from "./controllers/Auth"
 import { checkTokenValidity, setHeaders, validateToken } from "./middleware/Token";
 import Role from "./controllers/Role";
 const router = express.Router();
+import Permission from "./controllers/Permission";
 
 
 
@@ -28,5 +29,13 @@ router.get('/roles/:id',Role.getRoleById);
 router.get('/roles',Role.getAllRoles);
 router.put('/roles/:id',Role.updateRoleById);
 router.post('/users/me/forgotPassword',User.forgotPassword)
+
+
+router.post('/permission',checkTokenValidity,Permission.createPermission);
+router.get('/getpermission/:appName',checkTokenValidity,Permission.getPermission);
+router.get('/permissions/auth/:permissionId/:user',checkTokenValidity,Permission.getPermissionGrantRole);
+router.delete('/permissions/:permissionId',checkTokenValidity,Permission.deletePermissions);
+router.get('/allrolesusingpermissionid/:permissionId/roles',checkTokenValidity,Permission.allRolesUsingPermissionId);
+router.get('/allmodulesandpermission',checkTokenValidity,Permission.allModulesAndPermission);
 
 export default router;
