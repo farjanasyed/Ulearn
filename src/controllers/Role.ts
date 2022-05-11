@@ -190,12 +190,35 @@ export class RoleController {
                 })
             }
 
-        }).catch(err => {
-            console.log("Get Role::Error", err);
-            res.status(401).send({
-                statusCode: 401,
-                statusMessage: "Unathorized or Missing token"
-            })
+        }).catch(error => {
+            console.log("Get Role::Error", error);
+            if (error.response.status == 400) {
+                res.status(400).send({
+                    statusCode: 400,
+                    statusMessage: "Bad Request"
+                })
+            }
+            else if (error.response.status == 401) {
+                res.status(401).send({
+                    statusCode: 401,
+                    statusMessage: "Authorization Missing"
+                })
+
+            }
+            else if (error.response.status == 404) {
+                res.status(200).send({
+                    statusCode: 404,
+                    statusMessage: "Role Not found"
+                })
+
+            }
+            else {
+                res.status(500).send({
+                    statusCode: 500,
+                    statusMessage: "Somethingwent wrong"
+                })
+
+            }
         })
     }
 
