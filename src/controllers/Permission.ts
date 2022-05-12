@@ -105,12 +105,14 @@ class PermissionController {
 
     public async allModulesAndPermission(req: Request, res: Response) {
         let finalData:any=[];
+        var commonPath;
         PermissionService.allModulesAndPermission(req.headers.authorization).then((result:any) => {
             let resData=result.data;
             resData.forEach(element => {
                 let resourcePath=element.resourcePath;
                 let splitData=resourcePath.split("/");
                 if(splitData[3]=="AMS" && splitData[4] !== null && splitData[4] !== undefined){
+                    commonPath=splitData[0]+"/"+splitData[1]+"/"+splitData[2]+"/"+splitData[3]+"/";
                     let obj={
                         "module":splitData[4],
                         "permission":splitData[5]?splitData[5]:"/"
@@ -118,7 +120,6 @@ class PermissionController {
                     finalData.push(obj);
                 }
             });
-           
             let output:any=finalData.reduce(function(rv, x) {
                 (rv[x['module']] = rv[x['module']] || []).push(x['permission']);
                 return rv;
@@ -126,14 +127,14 @@ class PermissionController {
               let finalOutput=[]
               Object.entries(output).map(([key,value])=>{
                   let dataElement={
-                      "module":key,
+                      "moduleName":key,
+                      "moduleId":commonPath?commonPath+key:"/",
                       "permissions":value
                   }
                   finalOutput.push(dataElement);
               })
 
-            console.log("GETModules::Error",output);
-            console.log("GETAllModules::Error",finalOutput);
+
             res.status(200).send({
                 statusMessage: "Module and Permission Retrieved Successfully",
                 data: finalOutput
