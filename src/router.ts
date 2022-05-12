@@ -1,4 +1,3 @@
-import ActivitiesController from "./controllers/Activities";
 import * as express from "express";
 import User from "./controllers/User";
 import Auth from "./controllers/Auth"
@@ -28,7 +27,8 @@ router.post('/roles/revokeUsers/:id',Role.revokUsers)
 router.get('/roles/:id',Role.getRoleById);
 router.get('/roles',Role.getAllRoles);
 router.put('/roles/:id',Role.updateRoleById);
-router.post('/users/me/forgotPassword',User.forgotPassword)
+router.post('/users/me/forgotPassword',User.forgotPassword);
+router.post('/users/assignroles',User.assignRoleToUser)
 
 
 router.post('/permission',checkTokenValidity,Permission.createPermission);

@@ -175,6 +175,20 @@ class UserService {
             })
         })
     }
+  async assignRoles(body){
+      return axios.post(`${process.env.WSO2_URL}/scim2/Bulk`,body,{
+        auth: {
+            username: 'admin',
+            password: 'admin'
+        },
+        httpsAgent: new https.Agent({
+            cert: cert,
+            key: key,
+            rejectUnauthorized: false
+        })
+
+      })
+  }
 }
 
 
