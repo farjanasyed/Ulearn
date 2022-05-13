@@ -137,14 +137,28 @@ class UserService {
                 key: key,
                 rejectUnauthorized: false
             }),
-
             headers:{
                 "Authorization":`${token}`
             }
            
         })
     }
+   async verfyAndChangePassword(body){
+       console.log("body",body);
+    return axios.post(`${process.env.WSO2_URL}/api/identity/recovery/v0.9/set-password`,body,{
+        httpsAgent: new https.Agent({
+            cert: cert,
+            key: key,
+            rejectUnauthorized: false
+        }),
+        auth: {
+            username: 'admin',
+            password: 'admin'
+        },
+       
+    })
 
+   }
 
     async forgotPassword(body) {
         return axios.post(`${process.env.WSO2_URL}/api/identity/recovery/v0.9/recover-password?type=email&notify=true`,body, {

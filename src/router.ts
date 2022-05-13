@@ -28,7 +28,8 @@ router.get('/roles/:id',Role.getRoleById);
 router.get('/roles',Role.getAllRoles);
 router.put('/roles/:id',Role.updateRoleById);
 router.post('/users/me/forgotPassword',User.forgotPassword);
-router.post('/users/assignroles',User.assignRoleToUser)
+router.post('/users/assignroles',User.assignRoleToUser);
+router.post('/users/codeverification',User.verifyandChangePassword)
 
 
 router.post('/permission',checkTokenValidity,Permission.createPermission);

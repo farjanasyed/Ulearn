@@ -557,7 +557,40 @@ export class UserController {
 
   }
 
+  public async verifyandChangePassword(req: Request, res: Response) {
 
+    console.log("Headers", req.headers)
+
+    let body ={
+      "key": req.body.code ? req.body.code : "",
+      "password": req.body.password
+    }
+
+    UserService.verfyAndChangePassword(body).then(response => {
+      console.log("response",response);
+      if (response.status == 400) {
+        return res.status(400).send({
+          statusCode: 400,
+          statusMessage: "Invalid code"
+        })
+      }
+      else {
+        return res.status(200).send({
+          statusCode: 200,
+          statusMessage: "OTP Verified and password changed successfully"
+        })
+      }
+    }).catch(err => {
+      console.log("err",err)
+      if (err && err.response.status == 400) {
+        res.status(400).send({
+          statusCode: 400,
+          statuMessage: "Invalid code"
+        })
+      }
+    })
+
+  }
   public async assignRoleToUser(req: Request, res: Response) {
 
     let roleBody = {
@@ -614,7 +647,7 @@ export class UserController {
           return res.status(400).send({
             statusCode: 404,
             statusMessage: "Role Not found"
-            
+
           })
         }
 
@@ -637,10 +670,6 @@ export class UserController {
 
 
 }
-
-
-
-
 
 
 export default new UserController();
