@@ -71,7 +71,6 @@ class RoleService {
     }
 
     async getAllRoles(){
-
         return axios.get(`${process.env.WSO2_URL}/scim2/Roles`, {
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -87,9 +86,6 @@ class RoleService {
                 password: process.env.AUTH_PASSWORD
             }
         })
-
-
-
 
     }
 
@@ -153,7 +149,23 @@ class RoleService {
 
     }
    
-   
+   async getRolesById(roleId: string){
+    return axios.get(`${process.env.WSO2_URL}/scim2/Roles/${roleId}`,{
+        httpsAgent: new https.Agent({
+            cert: cert,
+            key: key,
+            rejectUnauthorized: false
+        }),
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        auth:{
+            username: process.env.AUTH_USER,
+            password: process.env.AUTH_PASSWORD
+        }
+    })
+   }
 }
 
 export default new RoleService();

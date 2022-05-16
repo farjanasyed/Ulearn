@@ -11,6 +11,16 @@ const getAllUserById = (roles: any) => {
     }));
 }
 
+const getRoleById = (roles: any) => {
+    return Promise.all(roles.map(async (role) => {
+        return await RoleService.getRoleById(role)
+
+    }));
+}
+
+
+
+
 export class RoleController {
     public async assignRoleToUser(req: Request, res: Response) {
         let users = req.body.users.map((userId: any) => {
@@ -182,7 +192,7 @@ export class RoleController {
                 const role = {
                     roleId: result.data?.id,
                     roleName: result.data?.displayName,
-                    permissions: result.data.permissions ? result.data.permissions : []
+                    permissions: result.data?.permissions ? result.data.permissions : []
                 }
                 res.status(200).send({
                     statusMessage: "Role Retrieved Successfully",
@@ -226,6 +236,7 @@ export class RoleController {
         RoleService.getAllRoles().then((response: any) => {
             if (response.status == 200) {
                 let roles = response.data?.Resources.map(res => {
+                    console.log("res",res);
                     return {
                         roleId: res.id,
                         roleName: res.displayName,
@@ -249,6 +260,46 @@ export class RoleController {
         })
 
     }
+
+
+  
+    public async getRolesById(req: Request,res: Response){
+        const permissionList =[];
+        getRoleById(req.body.roles).then(response=>{
+            console.log("response",response);
+            response.forEach(roleData=>{
+                 if(roleData.status === 200){
+                     let mappedRole = {
+                         roleId: roleData.data.id,
+                         roleName: roleData.data.displayName,
+                         permissions: roleData.data?.permissions ?  roleData.data?.permissions :[]
+                     }
+                     permissionList.push(mappedRole);
+                 }
+                 else {
+                    return res.status(500).send({
+                        "statusCode": 500,
+                        "statusMessage": "Roles retrieved successfully",
+                        "data": JSON.stringify(response)
+                    })
+                 }
+            })
+           return res.status(200).send({
+            "statusCode": 200,
+            "statusMessage": "Roles retrieved successfully",
+            "data":permissionList
+        })
+           
+        }).catch(err=>{
+            console.log("err",err);
+            return res.status(500).send({
+                "statusCode": 500,
+                "statusMessage": "Something went wrong",
+                
+            })
+        })
+}
+   
 
 
     public async revokUsers(req: Request, res: Response) {
@@ -333,7 +384,7 @@ export class RoleController {
                 const role = {
                     roleId: result.data?.id,
                     roleName: result.data?.displayName,
-                    permissions: result.data.permissions ? result.data.permissions : []
+                    permissions: req.body.permissions
                 }
                 res.status(200).send({
                     statusMessage: "Updated Role Successfully",
