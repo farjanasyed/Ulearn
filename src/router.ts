@@ -18,7 +18,8 @@ router.get('/users/verification',checkTokenValidity, User.verifyUser)
 router.post('/users/bulk',checkTokenValidity, User.createBulkUsers);
 router.post('/users/me/changePassword',checkTokenValidity,User.changePassword);
 router.get('/users',checkTokenValidity,User.getAllusers);
-router.delete('/users/:id',User.disableUser);
+router.delete('/users/disableUser/:id',User.disableUser);
+router.delete('/users/:id',User.deleteUser)
 router.patch('/users/:id',User.editUser);
 router.post('/roles',Role.assignRoleToUser);
 router.post('/roles/bulk',Role.createBulkRoles);
