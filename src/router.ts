@@ -7,10 +7,8 @@ const router = express.Router();
 import Permission from "./controllers/Permission";
 
 
-
-
 router.post('/users', User.createUser);
-//router.get('/users/:id',User.getUserById);
+router.get('/users/:id',User.getUserById);
 router.post('/authn/token', Auth.getAuthToken);
 router.get('/users/me', checkTokenValidity,Auth.getUserInfo);
 router.post('/authn/refresh-token',validateToken, Auth.getRefreshToken);

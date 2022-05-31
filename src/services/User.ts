@@ -70,15 +70,18 @@ class UserService {
     async getUserById(Id: string, token: any) {
         return axios.get(`${process.env.WSO2_URL}/scim2/Users/${Id}`, {
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
+                "Content-Type": "application/json"
             },
 
             httpsAgent: new https.Agent({
                 cert: cert,
                 key: key,
                 rejectUnauthorized: false
-            })
+            }),
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            },
         })
     }
 

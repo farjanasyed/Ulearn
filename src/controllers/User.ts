@@ -274,19 +274,36 @@ export class UserController {
   }
 
   public async getUserById(req: Request, res: Response) {
-
     try {
       let userId = req.params.id;
-      let userResponse = {
-
-      }
-      UserService.getUserById(userId, req.headers.authorization).then((response: any) => {
+      UserService.getUserById(userId, req.headers.authorization).then((result: any) => {
+        let userResponse = {};
+        if (result.status == 200) {
+          let rolesList = [];
+          result.data?.roles.forEach((role: any) => {
+            console.log("role", role);
+            if (role.type && role.type != "default") {
+              if (role.dispaly && !role.dispaly.includes("everyone")) {
+                rolesList.push(role.substring(role.indexOf('/') + 1));
+              }
+            }
+          })
+          userResponse["email"] = result.data?.emails ? result.data?.emails[0] : "";
+          userResponse["phoneNumber"] = result.data?.phoneNumbers ? result.data?.phoneNumbers[0].value : ""
+          userResponse["firstName"] = result.data?.name?.givenName ? result.data?.name?.givenName : "";
+          userResponse["familyName"] = result.data?.name?.familyName ? result.data?.name.familyName : "";
+          userResponse["roles"] = rolesList;
+          if(rolesList.length == 0){
+            userResponse["temporaryPassword"] = result.data.displayName
+          }
+        }
         res.status(200).send({
           statusCode: 200,
           StatusMessage: "User Retrieved Successfully",
           data: userResponse
         })
       }).catch(err => {
+        console.log("err", err);
         res.status(500).send({
           statusCode: 500,
           statusMessage: "Something Went Wrong"
@@ -295,7 +312,6 @@ export class UserController {
     }
 
     catch (err) {
-
       res.status(500).send({
         statusCode: 500,
         statuMessage: "Something Went Wrong"
@@ -643,7 +659,7 @@ export class UserController {
             "emailOtp": req.body?.otp
           }
           const validateOTPRes: any = await UserService.validateOTP(otpRequestBody);
-          console.log("validate otp",validateOTPRes);
+          console.log("validate otp", validateOTPRes);
           if (validateOTPRes.status === 200 && validateOTPRes.data && validateOTPRes.data?.isValid) {
             const updatePasswordRes = await UserService.changePassword(userId, user, "");
             if (updatePasswordRes.status == 200) {
