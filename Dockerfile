@@ -6,13 +6,15 @@ RUN npm install -g ts-node
 RUN npm install -g typescript
 COPY . .
 RUN tsc -p ./tsconfig.json
-ENV WSO2_URL=https://ec2-3-108-178-123.ap-south-1.compute.amazonaws.com:9443
-ENV AUTH_USER=admin
+ENV WSO2_URL=https://18.217.217.73:9443
+ENV AUTH_USER=admin@wso2.com
 ENV AUTH_PASSWORD=admin
-ENV Web_Client_Id=YRlwurgrJ_ghTfPXWnYwTaboNSMa
-ENV Web_Client_Secret=5JPH8IzQcFLkrXX71ZFF4QsJUc8a
+ENV Web_Client_Id=BsVXYu3TbA30z6g4ZXoPB8Uc4VIa
+ENV Web_Client_Secret=sOfDYKsFAO9_YnHn67cfcoRXNRca
 ENV Mobile_Client_Id=MP3cp5zFcQLPqVDCHfX6VosHefUa
 ENV Mobile_Client_Secret=3Hm8DeStrrPTik1wjkysGVjBH30a
+ENV CANDIDATE_RESET_PASSWORD_URL=https://applicant-dev.talentnext.ai
+ENV ADMIN_RESET_PASSWORD_URL=http://dev.talentnext.ai/
 RUN npm run build
 RUN pwd
 RUN echo "$PWD"

@@ -54,8 +54,11 @@ class UserService {
         let filter = `filter=userName eq ${userName}`
         return axios.get(`${process.env.WSO2_URL}/scim2/Users?${filter}`, {
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
+                "Content-Type": "application/json"
+            },
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -85,8 +88,8 @@ class UserService {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -98,14 +101,14 @@ class UserService {
     }
 
 
-    async deleteUser(userId){
+    async deleteUser(userId) {
         return axios.delete(`${process.env.WSO2_URL}/scim2/Users/${userId}`, {
             headers: {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -120,8 +123,8 @@ class UserService {
                 "Content-Type": "application/json",
             },
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -151,9 +154,10 @@ class UserService {
                 key: key,
                 rejectUnauthorized: false
             }),
-            headers: {
-                "Authorization": `${token}`
-            }
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            },
 
         })
     }
@@ -166,14 +170,27 @@ class UserService {
                 rejectUnauthorized: false
             }),
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
 
         })
 
     }
+  async validateOTP(body:any){
+    return axios.post(`${process.env.WSO2_URL}/api/identity/email-otp/v1/emailotp/validate`,body, {
+        auth: {
+            username: process.env.AUTH_USER,
+            password: process.env.AUTH_PASSWORD
+        },
+        httpsAgent: new https.Agent({
+            cert: cert,
+            key: key,
+            rejectUnauthorized: false
+        })
+    })
 
+  }
     async forgotPassword(body) {
         return axios.post(`${process.env.WSO2_URL}/api/identity/recovery/v0.9/recover-password?type=email&notify=true`, body, {
             headers: {
@@ -193,8 +210,8 @@ class UserService {
     async updateUser(userId, body) {
         return axios.patch(`${process.env.WSO2_URL}/wso2/scim/Users/${userId}`, body, {
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -206,8 +223,8 @@ class UserService {
     async assignRoles(body) {
         return axios.post(`${process.env.WSO2_URL}/scim2/Bulk`, body, {
             auth: {
-                username: 'admin',
-                password: 'admin'
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
             },
             httpsAgent: new https.Agent({
                 cert: cert,
@@ -226,23 +243,39 @@ class UserService {
             client_secret: '055697E714160A3F2A1DBD8D3B1EDC722E2150A026AD532BE75F982805B7CDE3'
 
         },
-        {
-            headers: {
-                "Authorization": `Basic YWRtaW46YWRtaW4=`,
-                "Content-Type": `application/json`
-            }
-        })
+            {
+                headers: {
+                    "Authorization": `Basic YWRtaW46YWRtaW4=`,
+                    "Content-Type": `application/json`
+                }
+            })
     }
 
     async activateUser(token: string, SFId: string) {
-    return axios.patch(`https://unextlearningprivatelimitedpartofm--unextdev.my.salesforce.com/services/data/v54.0/sobjects/user/${SFId}`,{},{
-        headers:{
-            'Authorization': `Bearer ${token}`,
-            'Content-Type':'application/JSON'
-        }
+        return axios.patch(`https://unextlearningprivatelimitedpartofm--unextdev.my.salesforce.com/services/data/v54.0/sobjects/user/${SFId}`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/JSON'
+            }
 
-    })
-}
+        })
+
+
+    }
+
+    async generateOTP(body: any) {
+        return axios.post(`${process.env.WSO2_URL}/api/identity/email-otp/v1/emailotp/generate`, body, {
+            auth: {
+                username: process.env.AUTH_USER,
+                password: process.env.AUTH_PASSWORD
+            },
+            httpsAgent: new https.Agent({
+                cert: cert,
+                key: key,
+                rejectUnauthorized: false
+            })
+        })
+    }
 }
 
 

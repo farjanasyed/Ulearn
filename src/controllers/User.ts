@@ -116,9 +116,10 @@ const tranformSQSUser = async (eventData: any) => {
   console.log("user profile", JSON.parse(userProfile).payload.unUser_Name__c)
   let user = {
     name: {
-      givenName: userData.unUser_Name__c,
-      familyName: userData.unUser_Name__c
+      givenName: userData.unName__c,
+      familyName: userData.unName__c
     },
+    cn: userData.unName__c,
     userName: userData.unUser_Name__c,
     password: "test@123",
     emails: [userData.unUser_Name__c],
@@ -137,16 +138,17 @@ const tranformSQSUser = async (eventData: any) => {
   if (userData.unUser_Contact__c) {
     user["externalId"] = userData.unUser_Contact__c
   }
-  UserService.createUser(user).then(async userResponse=>{
+  console.log("user data", JSON.stringify(user));
+  UserService.createUser(user).then(async userResponse => {
     if (userResponse.status == 201) {
       const tokenData = await UserService.getSalesForceToken();
       const activateUser = await UserService.activateUser(tokenData.data["access_token"], userData.unSAML_Federation_ID__c);
       console.log("user Response", activateUser);
-  
+
     }
-  }).then((error:any)=>{
+  }).then((error: any) => {
     if (error && error.response.status == 409) {
-      console.log("err",error);
+      console.log("err", error);
     }
   })
 
@@ -154,17 +156,6 @@ const tranformSQSUser = async (eventData: any) => {
 
 export class UserController {
   public async createUser(req: Request, res: Response) {
-    //  app.start();
-
-    //  return;
-    // const eventData = {
-    //   "MessageId": "5c94ae99-1746-4195-9ab8-1473f053f5f1",
-    //   "ReceiptHandle": "AQEBGZaS//rnvX3YUu7m0FeI5AR650JlFC+9yB5hGHRAhpTO8O9R9IpQEt2nC2zL0xCMFFF+O8EptphQFhGu7nGSMa1ohMaGC97VZJAMnQu0CXc6roYxZfIfRgwfQnoPPYnLi/AsfnequYgcjQDt+/zQTIUhyvmD4U8c1GsQXTomFaIx5QCC1quj8xe938eLtUEdLpli2ufV4npWP+OoQ6dHRQ3ad+UhVPIvqkIjwV3vTJ81mVk+apSjYmx6xbgnvqyuEjQMP5RXs7ErhzxsGfHCZPWzpv287FvN1R6N35EeLB5yM+YMpq1FDkCuuGvWXjFVhHFO+D+5r8NxP9/OiMRnfkyrEGNivLdAvNkMLibvA934L3OxfoqEMKqA0dNoKH6/H/+EYDcLGjefa9RiTfgmRI+lUPIPs1h2ZYtWrrc/X34=",
-    //   "MD5OfBody": "70a206e33fe308ecdce29ff128bd16e9",
-    //   "Body": "{\n  \"Type\" : \"Notification\",\n  \"MessageId\" : \"7423c881-f881-58e9-8a24-9275bb4d7fc4\",\n  \"TopicArn\" : \"arn:aws:sns:ap-south-1:748937180969:topic-ap-south-1-user-local\",\n  \"Message\" : \"{\\\"uniqueId\\\":\\\"8d8e9b11-c51f-4c0a-b190-32a966efb911\\\",\\\"payload\\\":{\\\"unUser_Contact__c\\\":null,\\\"unMedium_Photo_URL__c\\\":null,\\\"unLinkedIN__c\\\":null,\\\"unPhone__c\\\":null,\\\"unId__c\\\":\\\"0059D000003LoKTQA0\\\",\\\"unEmail__c\\\":\\\"shubham.sapkal@aethereus.com\\\",\\\"unAbout_Me__c\\\":null,\\\"unSAML_Federation_ID__c\\\":\\\"0059D000003LoKTQA0\\\",\\\"unFacebook__c\\\":null,\\\"unOrganization_ID__c\\\":\\\"00D9D0000000VF7UAM\\\",\\\"unName__c\\\":\\\"University  Course Coordinator\\\",\\\"unUser_Role__c\\\":null,\\\"Record_Created_Datetime__c\\\":\\\"2022-01-17T12:05:05Z\\\",\\\"Event__c\\\":\\\"Updated\\\",\\\"Record_Deleted_By__c\\\":null,\\\"Record_Created_By__c\\\":\\\"0055g00000DqPkiAAF\\\",\\\"Record_Last_Modified_By__c\\\":\\\"0059D000003ORJ9QAO\\\",\\\"Object_Name__c\\\":\\\"User\\\",\\\"unIs_Active__c\\\":true,\\\"unMobile__c\\\":null,\\\"unTitle__c\\\":null,\\\"unGoogle__c\\\":null,\\\"unProfile_Name__c\\\":\\\"University Course Coordinator\\\",\\\"Record_Last_Modified_Datetime__c\\\":\\\"2022-05-10T10:42:17Z\\\",\\\"unProfile__c\\\":\\\"00e9D000000clhCQAQ\\\",\\\"unUser_Name__c\\\":\\\"university.coursecoordinator@unext.com\\\",\\\"unCompany_Name__c\\\":null,\\\"Record_Deleted_Datetime__c\\\":null}}\",\n  \"Timestamp\" : \"2022-05-10T10:42:20.969Z\",\n  \"SignatureVersion\" : \"1\",\n  \"Signature\" : \"jYKSecsg6PX1/gAMGNhwjo350jgZorxoDWU3wAb0QI7v7ufh7JW1DWfoy22LW2DmTOV1xySteF05zK8yYx/C0F5SNAtgsvBNoXubB4ORbWxd4crqyWya5q6T7e7iDTyDKMHphGFKDdz/b2/q4FZow5A4qbBLFeo8iGt1yV+iOXdJztmGxxyfX2rUzdMMI4wHFpjEiKUUbstAMyoj1eZNyzrmMuwlqRwmYDSSaP8eyUOCildvsMWmMOaO/4/AHKNJ4X1mDeseERgt5UBLaGGOoa2w3NiYWrAugWFVtJW8iKSrmwHxLBx/LyYVKG3V+dxqy9XPzRJ9z5vwFi8annBSGA==\",\n  \"SigningCertURL\" : \"https://sns.ap-south-1.amazonaws.com/SimpleNotificationService-7ff5318490ec183fbaddaa2a969abfda.pem\",\n  \"UnsubscribeURL\" : \"https://sns.ap-south-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:ap-south-1:748937180969:topic-ap-south-1-user-local:a26a07d8-8357-4bd7-9fb0-5738c1c4bbe4\"\n}"
-    // }
-    // tranformSQSUser(eventData);
-   // return;
     try {
       let user: User = {
         name: {
@@ -179,9 +170,12 @@ export class UserController {
           value: req.body.mobileNumber == null ? "" : req.body.mobileNumber.toString(),
         }],
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-          "verifyEmail": false
+          "verifyEmail": true
         }
       }
+
+      user["displayName"] = user.password;
+      user["title"] = req?.body.isAdmin ? process.env.ADMIN_RESET_PASSWORD_URL : process.env.CANDIDATE_RESET_PASSWORD_URL
       UserService.createUser(user).then(response => {
         res.status(200).send({
           statusCode: 200,
@@ -546,7 +540,7 @@ export class UserController {
         })
       }
     }).catch(error => {
-      console.log("err",error);
+      console.log("err", error);
       if (error && error.response.status == 400) {
         res.status(400).send({
           statusCode: 400,
@@ -578,81 +572,122 @@ export class UserController {
 
   public async forgotPassword(req: Request, res: Response) {
     console.log("ChangePassword Request", req.body)
-
-    const userRequest = {
-      "user": {
-        "username": req.body.userName,
-        "realm": "",
-        "tenant-domain": ""
-      },
-      "properties": []
-    }
-
-    UserService.forgotPassword(userRequest).then(response => {
-      console.log("resonse", response)
-      return res.status(200).send({
-        statusCode: 200,
-        statuMessage: "Mail sent to reset the password",
-        data: response.data
-      });
-    }).catch(error => {
-      console.log("Error::FORGOTPASSWORD", error)
-      if (error && error.response.status == 400) {
-        res.status(400).send({
+    try {
+      const userResponse = await UserService.getUserByName(req.body.userName, null);
+      if (userResponse.status == 200) {
+        const userId = userResponse.data['Resources'][0].id;
+        if (userId) {
+          let otpRequestBody = {
+            "userId": userId
+          }
+          const generateOTPRes = await UserService.generateOTP(otpRequestBody);
+          if (generateOTPRes.status === 200) {
+            return res.status(200).send({
+              statusCode: 200,
+              statuMessage: "Mail sent to reset the password",
+              data: {
+                "transactionId": generateOTPRes.data["transactionId"]
+              }
+            })
+          }
+          else {
+            return res.status(400).send({
+              statusCode: 400,
+              statuMessage: "Something went wrong while sending OTP",
+              data: ""
+            })
+          }
+        }
+      }
+      else {
+        return res.status(400).send({
           statusCode: 400,
-          statuMessage: "Bad Request"
+          statuMessage: "User Id not found",
+          data: ""
         })
       }
-      if (error && error.response.status == 401) {
+    }
+    catch (err) {
+      console.log("err", err);
+      if (err && err.response.status == 401) {
         return res.status(401).send({
           statusCode: 401,
-          statuMessage: "Authentication failed"
+          statuMessage: "Unauthorized To Perform the operation",
+          data: ""
         })
       }
       else {
         return res.status(500).send({
           statusCode: 500,
-          statuMessage: "Something Went Wrong"
+          statuMessage: "Something went wrong",
+          data: ""
         })
+
       }
-    })
-
-
+    }
   }
 
   public async verifyandChangePassword(req: Request, res: Response) {
+    try {
+      const user = {
+        userName: req.body.userName,
+        password: req.body.password
+      }
+      const userResponse = await UserService.getUserByName(req.body.userName, null);
+      if (userResponse.status == 200) {
+        const userId = userResponse.data['Resources'][0].id;
+        if (userId) {
+          let otpRequestBody = {
+            "userId": userId,
+            "transactionId": req.body.transactionId,
+            "emailOtp": req.body?.otp
+          }
+          const validateOTPRes: any = await UserService.validateOTP(otpRequestBody);
+          console.log("validate otp",validateOTPRes);
+          if (validateOTPRes.status === 200 && validateOTPRes.data && validateOTPRes.data?.isValid) {
+            const updatePasswordRes = await UserService.changePassword(userId, user, "");
+            if (updatePasswordRes.status == 200) {
+              return res.status(200).send({
+                statusCode: 200,
+                statuMessage: "OTP Verified and Password changed successfully"
+              })
 
-    console.log("Headers", req.headers)
-
-    let body = {
-      "key": req.body.code ? req.body.code : "",
-      "password": req.body.password
-    }
-
-    UserService.verfyAndChangePassword(body).then(response => {
-      console.log("response", response);
-      if (response.status == 400) {
+            }
+          }
+          else {
+            return res.status(400).send({
+              statusCode: 400,
+              statuMessage: "Failed to verify the otp",
+              data: ""
+            })
+          }
+        }
+      }
+      else {
         return res.status(400).send({
           statusCode: 400,
-          statusMessage: "Invalid code"
+          statuMessage: "User Id not found",
+          data: ""
+        })
+      }
+    }
+    catch (err) {
+      console.log("Error while fetching user", err);
+      if (err && err.response.status == 401) {
+        return res.status(401).send({
+          statusCode: 401,
+          statuMessage: "Unauthorized To Perform the operation",
+          data: ""
         })
       }
       else {
-        return res.status(200).send({
-          statusCode: 200,
-          statusMessage: "OTP Verified and password changed successfully"
+        return res.status(500).send({
+          statusCode: 500,
+          statuMessage: "Something went wrong",
+          data: ""
         })
       }
-    }).catch(err => {
-      console.log("err", err)
-      if (err && err.response.status == 400) {
-        res.status(400).send({
-          statusCode: 400,
-          statuMessage: "Invalid code"
-        })
-      }
-    })
-
+    }
   }
   public async assignRoleToUser(req: Request, res: Response) {
     let roleBody = {
@@ -729,6 +764,8 @@ export class UserController {
         })
     })
   }
+
+
 
 
 }
