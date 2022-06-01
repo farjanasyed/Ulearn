@@ -32,11 +32,13 @@ router.post('/users/assignroles',User.assignRoleToUser);
 router.post('/users/codeverification',User.verifyandChangePassword)
 
 
-router.post('/permission',checkTokenValidity,Permission.createPermission);
-router.get('/getpermission/:appName',checkTokenValidity,Permission.getPermission);
-router.get('/permissions/auth/:permissionId/:user',checkTokenValidity,Permission.getPermissionGrantRole);
-router.delete('/permissions/:permissionId',checkTokenValidity,Permission.deletePermissions);
-router.get('/allrolesusingpermissionid/:permissionId/roles',checkTokenValidity,Permission.allRolesUsingPermissionId);
+router.post('/createPermission',checkTokenValidity,Permission.createPermission);
+// router.get('/getpermission/:appName',checkTokenValidity,Permission.getPermission);
+// router.get('/permissions/auth/:permissionId/:user',checkTokenValidity,Permission.getPermissionGrantRole);
+router.post('/deleteModuleOrPermisssion',checkTokenValidity,Permission.deleteModulePermissions);
+// router.get('/allrolesusingpermissionid/:permissionId/roles',checkTokenValidity,Permission.allRolesUsingPermissionId);
 router.get('/allmodulesandpermission',checkTokenValidity,Permission.allModulesAndPermission);
+router.post('/createModule',checkTokenValidity,Permission.createModule);
+
 
 export default router;
