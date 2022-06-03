@@ -6,7 +6,7 @@ RUN npm install -g ts-node
 RUN npm install -g typescript
 COPY . .
 RUN tsc -p ./tsconfig.json
-ENV WSO2_URL=https://18.217.217.73:9443
+ENV WSO2_URL=https://3.135.36.52:9443
 ENV AUTH_USER=admin@wso2.com
 ENV AUTH_PASSWORD=admin
 ENV Web_Client_Id=BsVXYu3TbA30z6g4ZXoPB8Uc4VIa
