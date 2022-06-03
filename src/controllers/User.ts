@@ -280,14 +280,13 @@ export class UserController {
         let userResponse = {};
         if (result.status == 200) {
           let rolesList = [];
-          result.data?.roles.forEach((role: any) => {
-            console.log("role", role);
-            if (role.type && role.type != "default") {
-              if (role.dispaly && !role.dispaly.includes("everyone")) {
-                rolesList.push(role.substring(role.indexOf('/') + 1));
-              }
-            }
-          })
+          const defaultRoles = result.data?.roles.find((role)=> role.type== "default");
+          if(defaultRoles){
+             const listRoles = defaultRoles.value.split(',').filter(e=>
+                  !e.includes('Internal/everyone')
+             ).map(e=>e.split('/')[1]);
+             rolesList = listRoles;
+          }
           userResponse["email"] = result.data?.emails ? result.data?.emails[0] : "";
           userResponse["phoneNumber"] = result.data?.phoneNumbers ? result.data?.phoneNumbers[0].value : ""
           userResponse["firstName"] = result.data?.name?.givenName ? result.data?.name?.givenName : "";
